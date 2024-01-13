@@ -1,23 +1,69 @@
 
-.content {
-		display: flex;
-		flex-direction: column;
-		align-items: center;
-		justify-content: center;
+page{background-color: #f4f4f4;}
+.Top-view{
+	height: 330rpx;
+	position: relative;
+	background-image: linear-gradient(to top, #9be15d 0%, #00e3ae 100%);
 }
-.logo {
-		height: 200rpx;
-		width: 200rpx;
-		margin-top: 200rpx;
-		margin-left: auto;
-		margin-right: auto;
-		margin-bottom: 50rpx;
+.top-title {
+	padding-left: 12px;
 }
-.text-area {
-		display: flex;
-		justify-content: center;
+.profit-view{
+	background-color: #FFFFFF;
+	position: absolute;
+	left: 20rpx;
+	right: 20rpx;
+	border-radius: 10rpx;
+	padding: 20rpx;
 }
-.title {
-		font-size: 36rpx;
-		color: #8f8f94;
+.profit-num{
+	display: flex;
+	flex-direction: column;
+	padding-bottom: 10rpx;
 }
+.profit-num text:nth-child(2){
+	font-size: 40rpx;
+	padding-top: 10rpx;
+}
+.profit-sale{
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+}
+.profit-sale view{
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+}
+.profit-sale view text:nth-child(1){
+	color: #a7a7a7;
+	padding-bottom: 10rpx;
+}
+.profit-sale view text:nth-child(2){
+	font-weight: bold;
+}
+.Gong-ge{
+	background-color: #FFFFFF;
+	margin: 0 20rpx 20rpx 20rpx;
+	border-radius: 10rpx;
+	display: flex;
+	flex-wrap: wrap;
+	position: absolute;
+	left: 0;
+	right: 0;
+	color: #555555;
+}
+.Gong-ge image{
+	width: 55rpx;
+	height: 55rpx;
+	display: block;
+	margin-bottom: 20rpx;
+}
+.Gong-ge view{
+	width: calc(25% - 10rpx*2);
+	margin: 20rpx 10rpx;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+}
+

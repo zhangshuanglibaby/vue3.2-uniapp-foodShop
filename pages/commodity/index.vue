@@ -1,5 +1,7 @@
 <template>
-	<view>商品管理</view>
+	<view class="">
+		商品管理
+	</view>
 </template>
 
 <script>

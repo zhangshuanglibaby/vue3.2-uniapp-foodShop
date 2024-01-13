@@ -1,14 +1,14 @@
 {
   "pages": [
-    "pages/index/index",
     "pages/commodity/index",
+    "pages/index/index",
     "pages/order/index"
   ],
   "window": {
     "navigationBarTextStyle": "black",
     "navigationBarTitleText": "uni-app",
-    "navigationBarBackgroundColor": "#F8F8F8",
-    "backgroundColor": "#F8F8F8"
+    "navigationBarBackgroundColor": "#ffffff",
+    "backgroundColor": "#ffffff"
   },
   "tabBar": {
     "color": "#7a7e83",
