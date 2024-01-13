@@ -1,0 +1,40 @@
+{
+  "pages": [
+    "pages/index/index",
+    "pages/commodity/index",
+    "pages/order/index"
+  ],
+  "window": {
+    "navigationBarTextStyle": "black",
+    "navigationBarTitleText": "uni-app",
+    "navigationBarBackgroundColor": "#F8F8F8",
+    "backgroundColor": "#F8F8F8"
+  },
+  "tabBar": {
+    "color": "#7a7e83",
+    "selectedColor": "#3cc51f",
+    "borderStyle": "black",
+    "backgroundColor": "#ffffff",
+    "list": [
+      {
+        "pagePath": "pages/index/index",
+        "text": "首页",
+        "iconPath": "/static/tab/shouye-weixuan.png",
+        "selectedIconPath": "./static/tab/shouye-yixuan.png"
+      },
+      {
+        "pagePath": "pages/commodity/index",
+        "text": "商品",
+        "iconPath": "/static/tab/shangpin-weixuan.png",
+        "selectedIconPath": "./static/tab/shangpin-yixuan.png"
+      },
+      {
+        "pagePath": "pages/order/index",
+        "text": "商品",
+        "iconPath": "/static/tab/dingdan-weixuan.png",
+        "selectedIconPath": "./static/tab/dingdan-yixuan.png"
+      }
+    ]
+  },
+  "usingComponents": {}
+}

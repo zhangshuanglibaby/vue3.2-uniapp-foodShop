@@ -1,0 +1,35 @@
+/* --------横幅和秒杀公用样式 */
+.sort-table image{
+	width: 70rpx;
+	height: 70rpx;
+	display: block;
+}
+.sort-table text{
+	/* color: #FFFFFF;
+	background-color: #E64340;
+	border-radius: 7rpx;
+	padding: 10rpx 20rpx;
+	font-size: 26rpx; */
+}
+.upload-banner image{
+	width: 100%;
+	height: 100%;
+	display: block;
+}
+.relation{
+	color: #FFFFFF;
+	background-color: #E64340;
+	border-radius: 7rpx;
+	display: flex;
+	justify-content: space-between;
+	padding: 20rpx;
+	margin-top: 30rpx;
+	align-items: center;
+}
+.relation text:nth-child(2){
+	font-size: 26rpx;
+	flex: 1;
+	padding-left: 50rpx;
+	text-align: right;
+	color: antiquewhite;
+}

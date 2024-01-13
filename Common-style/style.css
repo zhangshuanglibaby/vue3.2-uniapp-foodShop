@@ -1,0 +1,136 @@
+/* 底部按钮 */
+.newly-added-view{
+	position: fixed;
+	left: 0;
+	right: 0;
+	bottom: 0;
+	background-color: #FFFFFF;
+	z-index: 99;
+}
+
+.newly-added{
+	background-color: #ed6b51;
+	height: 80rpx;
+	text-align: center;
+	line-height: 80rpx;
+	color: #FFFFFF;
+	font-size: 33rpx;
+	border-radius: 10rpx;
+	margin: 0 20rpx 68rpx 20rpx;
+}
+
+/* ----横幅管理，分类管理 */
+.sort-Header{
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	background-color: #f8f8f8;
+}
+.sort-position{
+	position: fixed;
+	top: 0;
+	left: 0;
+	right: 0;
+	height: 80rpx;
+	padding: 0 20rpx;
+}
+.sort-table{
+	background-color: inherit !important;
+	border-bottom: 1rpx solid #e6e6e6;
+	padding: 30rpx 20rpx !important;
+}
+.occupy{
+	flex: 0.5;
+}
+.sort-but{
+	color: #FFFFFF;
+	background-color: #E64340;
+	border-radius: 7rpx;
+	padding: 10rpx 20rpx;
+	font-size: 26rpx;
+}
+
+/* ---弹窗 */
+.modify-att{
+	position: fixed;
+	top: 0;
+	left: 0;
+	right: 0;
+	bottom: 0;
+	background-color: rgba(0,0,0,0.6);
+	z-index: 99;
+}
+.space-view{
+	height: 900rpx;
+	padding-bottom: 30rpx;
+	background: #fefefe;
+	overflow-y:auto;
+	padding: 20rpx;
+}
+.modify-white{
+	background-color: #FFFFFF;
+	position: fixed;
+	bottom: 0;
+	left: 0;
+	right: 0;
+	height: 950rpx;
+	border-top-left-radius: 20rpx;
+	border-top-right-radius: 20rpx;
+	padding: 20rpx;
+	overflow: auto;
+	animation: post-list-row .4s;
+	z-index: 999;
+}
+@keyframes post-list-row {
+	0% {
+		opacity: 0;
+		-webkit-transform: translateY(200px);
+		transform: translateY(200px);
+	}
+	100% {
+		opacity: 1;
+	}
+}
+/* ---弹窗里的标题，取消按钮 */
+.modify-sub image{
+	display: block;
+	width: 30rpx;
+	height: 30rpx;
+}
+.modify-sub{
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	padding-bottom: 30rpx;
+}
+.modify-sub text:nth-child(3){
+	background-color: #ed6b51;
+	color: #FFFFFF;
+	border-radius: 7rpx;
+	padding: 10rpx 30rpx;
+	font-size: 28rpx;
+}
+
+/* -----文本超过隐藏 */
+.over-text{
+	overflow: hidden;
+	text-overflow: ellipsis;
+	display: -webkit-box !important;
+	-webkit-line-clamp: 1;
+	-webkit-box-orient: vertical;
+}
+
+/* 没有数据的提示 */
+.Tips{
+	text-align: center;
+	padding-top: 100rpx;
+	color: #cccccc;
+}
+
+/* loading设置的高度 */
+.loading-hei{
+	height: 90px;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+}
