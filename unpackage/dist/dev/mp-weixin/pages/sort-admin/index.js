@@ -1,6 +1,7 @@
 "use strict";
 const common_vendor = require("../../common/vendor.js");
 const Acc_config_init = require("../../Acc.config/init.js");
+const Acc_config_media = require("../../Acc.config/media.js");
 const _sfc_main = {
   __name: "index",
   setup(__props) {
@@ -22,10 +23,8 @@ const _sfc_main = {
     });
     const submit = () => {
       if (!data.sort_name) {
-        common_vendor.wx$1.showToast({
-          title: "请输入分类名称",
-          icon: "none"
-        });
+        new Acc_config_media.Feedback("请输入分类", "none").toast();
+        return;
       }
       console.log(data.sort_name);
     };

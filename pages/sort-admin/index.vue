@@ -8,7 +8,7 @@
 		<text class="occupy">{{ item.sort_name }}</text>
 		<text class="sort-but">删除</text>
 	</view>
-	<view v-if="!sort.length" class="Tips">还没有分类～</view>
+	<view v-if="!sort.length" class="Tips">你还没有分类数据</view>
 	<!-- 弹窗 -->
 	<page-container :show="popupShow" bindclickoverlay="onClickoverlay">
 		<view class="space-view">
@@ -32,7 +32,8 @@
 
 <script setup>
 	import { ref, onMounted, reactive, toRefs } from "vue";
-	import { init } from "@/Acc.config/init.js"
+	import { init } from "@/Acc.config/init.js";
+	import { Feedback } from "@/Acc.config/media.js";
 	// uniapp 还不支持该事件
 	const onClickoverlay = () => {
 		console.log("点击了")
@@ -59,10 +60,8 @@
 	// 点击提交新增分类
 	const submit = () => {
 		if(!data.sort_name) {
-			wx.showToast({
-				title: '请输入分类名称',
-				icon: "none"
-			})
+			new Feedback("请输入分类", "none").toast();
+			return;
 		}
 		console.log(data.sort_name)
 	}
