@@ -1,13 +1,14 @@
 <template>
-	<view class="sort-Header sort-position">
+	<view class="sort-Header sort-position" v-if="sort.length">
 		<text>分类</text>
 		<text>操作</text>
 	</view>
 	<view style="height: 90rpx;"></view>
-	<view class="sort-Header sort-table">
-		<text class="occupy">休闲零食</text>
+	<view v-for="(item, index) in sort" :key="index" class="sort-Header sort-table">
+		<text class="occupy">{{ item.sort_name }}</text>
 		<text class="sort-but">删除</text>
 	</view>
+	<view v-if="!sort.length" class="Tips">还没有分类～</view>
 	<!-- 弹窗 -->
 	<page-container :show="popupShow" bindclickoverlay="onClickoverlay">
 		<view class="space-view">
@@ -15,9 +16,9 @@
 				<image src="/static/detail/guanbi.svg" mode="widthFix" @click="popupShow = false"></image>
 			</view>
 			<view class="att-input">
-				<input type="text" placeholder="输入分类" placeholder-class="I-style" :cursor-spacing="50" />
+				<input v-model="sort_name" type="text" placeholder="输入分类" placeholder-class="I-style" :cursor-spacing="50" />
 			</view>
-			<view class="newly-added classif">
+			<view class="newly-added classif" @click="submit">
 				<text>新增分类</text>
 			</view>
 		</view>
@@ -30,7 +31,7 @@
 </template>
 
 <script setup>
-	import { ref, onMounted } from "vue";
+	import { ref, onMounted, reactive, toRefs } from "vue";
 	import { init } from "@/Acc.config/init.js"
 	// uniapp 还不支持该事件
 	const onClickoverlay = () => {
@@ -40,19 +41,31 @@
 	// 控制弹窗现显
 	const popupShow = ref(false);
 	
-	const addSort = async () => {
+	const data = reactive({
+			sort: [], // 分类数据
+			sort_name: "", // 分类名称
+		});
+	const { sort, sort_name } = toRefs((data));
+	// 获取分类数据
+	const getsort = async () => {
 		const DB = await init();
-		console.log(DB, "====>db");
-		const res = await DB.database().collection("men").add({
-			data: {
-				m: 1
-			}
-		})
-		console.log(res," ===>res");
+		const res = await DB.database().collection("good_sort").limit(10).get();
+		data.sort = res.data;
 	}
 	onMounted(() => {
-		// addSort();
-	}) 
+		getsort();
+	})
+	
+	// 点击提交新增分类
+	const submit = () => {
+		if(!data.sort_name) {
+			wx.showToast({
+				title: '请输入分类名称',
+				icon: "none"
+			})
+		}
+		console.log(data.sort_name)
+	}
 </script>
 
 <style scoped>
