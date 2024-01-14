@@ -30,7 +30,8 @@
 </template>
 
 <script setup>
-	import { ref } from "vue";
+	import { ref, onMounted } from "vue";
+	import { init } from "@/Acc.config/init.js"
 	// uniapp 还不支持该事件
 	const onClickoverlay = () => {
 		console.log("点击了")
@@ -38,6 +39,20 @@
 	
 	// 控制弹窗现显
 	const popupShow = ref(false);
+	
+	const addSort = async () => {
+		const DB = await init();
+		console.log(DB, "====>db");
+		const res = await DB.database().collection("men").add({
+			data: {
+				m: 1
+			}
+		})
+		console.log(res," ===>res");
+	}
+	onMounted(() => {
+		// addSort();
+	}) 
 </script>
 
 <style scoped>

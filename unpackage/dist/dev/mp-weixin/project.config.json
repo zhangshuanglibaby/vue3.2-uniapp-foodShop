@@ -22,6 +22,7 @@
     "appid": "wxf701d985add18a2a",
     "projectname": "lingshi-admin",
     "condition": {},
+    "cloudfunctionRoot": "cloudfunctions/",
     "editorSetting": {
         "tabIndent": "insertSpaces",
         "tabSize": 4

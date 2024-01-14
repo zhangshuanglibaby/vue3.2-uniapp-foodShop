@@ -4,6 +4,8 @@ const _sfc_main = {
   __name: "index",
   setup(__props) {
     const popupShow = common_vendor.ref(false);
+    common_vendor.onMounted(() => {
+    });
     return (_ctx, _cache) => {
       return {
         a: common_vendor.o(($event) => popupShow.value = false),
