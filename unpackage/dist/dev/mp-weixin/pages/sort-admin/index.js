@@ -6,43 +6,53 @@ const _sfc_main = {
   __name: "index",
   setup(__props) {
     const popupShow = common_vendor.ref(false);
-    const data = common_vendor.reactive({
-      sort: [],
-      // 分类数据
-      sort_name: ""
-      // 分类名称
-    });
-    const { sort, sort_name } = common_vendor.toRefs(data);
+    const sort = common_vendor.ref([]);
     const getsort = async () => {
       const DB = await Acc_config_init.init();
       const res = await DB.database().collection("good_sort").limit(10).get();
-      data.sort = res.data;
+      console.log(res, "====>getsort");
+      sort.value = res.data;
     };
     common_vendor.onMounted(() => {
       getsort();
     });
-    const submit = () => {
-      if (!data.sort_name) {
+    const submitParams = common_vendor.reactive({
+      sort_name: "",
+      // 分类名称
+      quantity: 0
+      // 数量
+    });
+    const submit = async () => {
+      if (!submitParams.sort_name) {
         new Acc_config_media.Feedback("请输入分类", "none").toast();
         return;
       }
-      console.log(data.sort_name);
+      const DB = await Acc_config_init.init();
+      const query_data = await DB.database().collection("good_sort").where({ sort_name: submitParams.sort_name }).get();
+      if (query_data.data.length > 0) {
+        new Acc_config_media.Feedback("已经存在该分类").toast();
+        return;
+      }
+      const res = await DB.database().collection("good_sort").add({ data: submitParams });
+      sort.value.push({ _id: res._id, ...submitParams });
+      submitParams.sort_name = "";
+      popupShow.value = false;
     };
     return (_ctx, _cache) => {
       return common_vendor.e({
-        a: common_vendor.unref(sort).length
-      }, common_vendor.unref(sort).length ? {} : {}, {
-        b: common_vendor.f(common_vendor.unref(sort), (item, index, i0) => {
+        a: sort.value.length
+      }, sort.value.length ? {} : {}, {
+        b: common_vendor.f(sort.value, (item, index, i0) => {
           return {
             a: common_vendor.t(item.sort_name),
             b: index
           };
         }),
-        c: !common_vendor.unref(sort).length
-      }, !common_vendor.unref(sort).length ? {} : {}, {
+        c: !sort.value.length
+      }, !sort.value.length ? {} : {}, {
         d: common_vendor.o(($event) => popupShow.value = false),
-        e: common_vendor.unref(sort_name),
-        f: common_vendor.o(($event) => common_vendor.isRef(sort_name) ? sort_name.value = $event.detail.value : null),
+        e: submitParams.sort_name,
+        f: common_vendor.o(($event) => submitParams.sort_name = $event.detail.value),
         g: common_vendor.o(submit),
         h: popupShow.value,
         i: common_vendor.o(($event) => popupShow.value = true)

@@ -16,7 +16,7 @@
 				<image src="/static/detail/guanbi.svg" mode="widthFix" @click="popupShow = false"></image>
 			</view>
 			<view class="att-input">
-				<input v-model="sort_name" type="text" placeholder="输入分类" placeholder-class="I-style" :cursor-spacing="50" />
+				<input v-model="submitParams.sort_name" type="text" placeholder="输入分类" placeholder-class="I-style" :cursor-spacing="50" />
 			</view>
 			<view class="newly-added classif" @click="submit">
 				<text>新增分类</text>
@@ -42,28 +42,39 @@
 	// 控制弹窗现显
 	const popupShow = ref(false);
 	
-	const data = reactive({
-			sort: [], // 分类数据
-			sort_name: "", // 分类名称
-		});
-	const { sort, sort_name } = toRefs((data));
+	const sort = ref([]); // 分类数据
 	// 获取分类数据
 	const getsort = async () => {
 		const DB = await init();
 		const res = await DB.database().collection("good_sort").limit(10).get();
-		data.sort = res.data;
+		console.log(res, "====>getsort")
+		sort.value = res.data;
 	}
 	onMounted(() => {
 		getsort();
 	})
 	
 	// 点击提交新增分类
-	const submit = () => {
-		if(!data.sort_name) {
+	const submitParams = reactive({
+		sort_name: "", // 分类名称
+		quantity: 0 // 数量
+	})
+	const submit = async () => {
+		if(!submitParams.sort_name) {
 			new Feedback("请输入分类", "none").toast();
 			return;
 		}
-		console.log(data.sort_name)
+		// 查询数据库是否存在相同的分类
+		const DB = await init();
+		const query_data = await DB.database().collection("good_sort").where({ sort_name: submitParams.sort_name }).get();
+		if(query_data.data.length > 0) {
+			new Feedback("已经存在该分类").toast();
+			return;
+		}
+		const res = await DB.database().collection("good_sort").add({ data: submitParams  });
+		sort.value.push({ _id: res._id , ...submitParams  });
+		submitParams.sort_name = ""; // 清空数据
+		popupShow.value = false; // 关闭弹窗
 	}
 </script>
 

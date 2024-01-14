@@ -6765,7 +6765,6 @@ exports.createSSRApp = createSSRApp;
 exports.e = e;
 exports.f = f;
 exports.index = index;
-exports.isRef = isRef;
 exports.o = o;
 exports.onMounted = onMounted;
 exports.reactive = reactive;
