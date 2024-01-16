@@ -2,6 +2,10 @@
 const common_vendor = require("../../common/vendor.js");
 const Acc_config_init = require("../../Acc.config/init.js");
 const Acc_config_media = require("../../Acc.config/media.js");
+if (!Math) {
+  Loading();
+}
+const Loading = () => "../public-view/loading.js";
 const _sfc_main = {
   __name: "index",
   setup(__props) {
@@ -38,6 +42,20 @@ const _sfc_main = {
       submitParams.sort_name = "";
       popupShow.value = false;
     };
+    const current_page = common_vendor.ref(0);
+    const loading = common_vendor.ref(false);
+    common_vendor.onReachBottom(async () => {
+      const DB = await Acc_config_init.init();
+      const { total } = await DB.database().collection("good_sort").count();
+      if (sort.value.length === total)
+        return;
+      current_page.value++;
+      loading.value = true;
+      const skip = current_page.value * 10;
+      const res = await DB.database().collection("good_sort").limit(10).skip(skip).get();
+      sort.value = [...sort.value, ...res.data];
+      loading.value = false;
+    });
     return (_ctx, _cache) => {
       return common_vendor.e({
         a: sort.value.length
@@ -55,7 +73,9 @@ const _sfc_main = {
         f: common_vendor.o(($event) => submitParams.sort_name = $event.detail.value),
         g: common_vendor.o(submit),
         h: popupShow.value,
-        i: common_vendor.o(($event) => popupShow.value = true)
+        i: loading.value
+      }, loading.value ? {} : {}, {
+        j: common_vendor.o(($event) => popupShow.value = true)
       });
     };
   }

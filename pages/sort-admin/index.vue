@@ -23,6 +23,10 @@
 			</view>
 		</view>
 	</page-container>
+	<!-- 加载loading -->
+	<view class="loading-hei">
+		<Loading v-if="loading" />
+	</view>
 	<!-- 底部的新增分类按钮 -->
 	<view style="height: 300rpx;"></view>
 	<view class="newly-added-view"  @click="popupShow = true">
@@ -31,9 +35,12 @@
 </template>
 
 <script setup>
+	import {  onReachBottom } from "@dcloudio/uni-app"
 	import { ref, onMounted, reactive, toRefs } from "vue";
 	import { init } from "@/Acc.config/init.js";
 	import { Feedback } from "@/Acc.config/media.js";
+	
+	import Loading from "@/pages/public-view/loading.vue"
 	// uniapp 还不支持该事件
 	const onClickoverlay = () => {
 		console.log("点击了")
@@ -76,6 +83,21 @@
 		submitParams.sort_name = ""; // 清空数据
 		popupShow.value = false; // 关闭弹窗
 	}
+	
+	// 页面上拉触底事件
+	const current_page = ref(0); // 记录当前页
+	const loading = ref(false); // loading 状态
+	onReachBottom(async () => {
+		const DB = await init();
+		const { total } = await DB.database().collection("good_sort").count(); // 获取分类数据的总条数
+		if(sort.value.length === total) return; // 表示加载完毕了 就不执行后面了
+		current_page.value++;
+		loading.value = true;
+		const skip = current_page.value * 10;
+		const res = await DB.database().collection("good_sort").limit(10).skip(skip).get();
+		sort.value = [...sort.value, ...res.data];
+		loading.value = false;
+	})
 </script>
 
 <style scoped>

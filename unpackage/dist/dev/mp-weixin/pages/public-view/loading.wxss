@@ -1,0 +1,18 @@
+
+.loading.data-v-ecda28bf {
+		width: 40rpx;
+		height: 40rpx;
+		margin: 0 auto;
+		border: 5rpx solid #cecccc;
+		border-radius: 50%;
+		border-top-color: transparent;
+		animation: name-ecda28bf 1s linear infinite;
+}
+@keyframes name-ecda28bf {
+from {
+			transform: rotate(0);
+}
+to {
+			transform: rotate(360deg);
+}
+}
