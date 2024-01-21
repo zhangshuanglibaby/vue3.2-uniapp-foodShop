@@ -6,7 +6,7 @@
 	<view style="height: 90rpx;"></view>
 	<view v-for="(item, index) in sort" :key="index" class="sort-Header sort-table">
 		<text class="occupy">{{ item.sort_name }}</text>
-		<text class="sort-but">删除</text>
+		<text class="sort-but" @click="deleteItem(item._id, index, item.quantity)">删除</text>
 	</view>
 	<view v-if="!sort.length" class="Tips">你还没有分类数据</view>
 	<!-- 弹窗 -->
@@ -98,6 +98,23 @@
 		sort.value = [...sort.value, ...res.data];
 		loading.value = false;
 	})
+	
+	// 删除
+	const deleteItem = async (id, index, quantity) => {
+		if(quantity > 0) {
+			new Feedback("请先删除该分类下的商品", "none").toast();
+			return;
+		}
+		try{
+			const DB = await init();
+			await DB.database().collection("good_sort").doc(id).remove();
+			sort.value.splice(index, 1);
+			new Feedback("删除成功", "success").toast();
+		}catch(e){
+			new Feedback("删除失败").toast();
+		}
+		
+	}
 </script>
 
 <style scoped>

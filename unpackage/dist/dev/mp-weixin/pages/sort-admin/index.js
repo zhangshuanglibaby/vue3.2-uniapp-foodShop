@@ -56,6 +56,20 @@ const _sfc_main = {
       sort.value = [...sort.value, ...res.data];
       loading.value = false;
     });
+    const deleteItem = async (id, index, quantity) => {
+      if (quantity > 0) {
+        new Acc_config_media.Feedback("请先删除该分类下的商品", "none").toast();
+        return;
+      }
+      try {
+        const DB = await Acc_config_init.init();
+        await DB.database().collection("good_sort").doc(id).remove();
+        sort.value.splice(index, 1);
+        new Acc_config_media.Feedback("删除成功", "success").toast();
+      } catch (e) {
+        new Acc_config_media.Feedback("删除失败").toast();
+      }
+    };
     return (_ctx, _cache) => {
       return common_vendor.e({
         a: sort.value.length
@@ -63,7 +77,8 @@ const _sfc_main = {
         b: common_vendor.f(sort.value, (item, index, i0) => {
           return {
             a: common_vendor.t(item.sort_name),
-            b: index
+            b: common_vendor.o(($event) => deleteItem(item._id, index, item.quantity), index),
+            c: index
           };
         }),
         c: !sort.value.length
