@@ -7,7 +7,6 @@ const _sfc_main = {
     const sku_data = common_vendor.ref([
       // 规格生成数据
       {
-        title: 1,
         att_data: [],
         // 属性 att_name  att_value
         price: "",
@@ -44,7 +43,18 @@ const _sfc_main = {
       for (const item of sku_data.value) {
         item.att_data = skuValue.value;
       }
-      console.log(sku_data.value, "===>sku_data.value");
+    };
+    const newSpecs = () => {
+      const newAttData = {
+        att_data: skuValue.value,
+        price: "",
+        stock: "",
+        image: ""
+      };
+      sku_data.value.push(newAttData);
+    };
+    const deleteSpecs = (index) => {
+      sku_data.value.splice(index, 1);
     };
     return (_ctx, _cache) => {
       return {
@@ -58,8 +68,12 @@ const _sfc_main = {
           };
         }),
         c: common_vendor.f(sku_data.value, (item, index, i0) => {
-          return common_vendor.e(sku_data.value.length ? {} : {}, {
-            a: common_vendor.f(item.att_data, (item_add, item_index, i1) => {
+          return common_vendor.e({
+            a: common_vendor.t(index + 1)
+          }, sku_data.value.length ? {
+            b: common_vendor.o(($event) => deleteSpecs(index), index)
+          } : {}, {
+            c: common_vendor.f(item.att_data, (item_add, item_index, i1) => {
               return {
                 a: common_vendor.t(item_add.att_name),
                 b: `请输入${item_add.att_name}`,
@@ -67,31 +81,32 @@ const _sfc_main = {
                 d: item_index
               };
             }),
-            b: item.att_value,
-            c: item.price,
-            d: common_vendor.o(($event) => item.price = $event.detail.value, index),
-            e: item.stock,
-            f: common_vendor.o(($event) => item.stock = $event.detail.value, index),
-            g: !item.image
+            d: item.att_value,
+            e: item.price,
+            f: common_vendor.o(($event) => item.price = $event.detail.value, index),
+            g: item.stock,
+            h: common_vendor.o(($event) => item.stock = $event.detail.value, index),
+            i: !item.image
           }, !item.image ? {} : {}, {
-            h: item.image,
-            i: item.image
+            j: item.image,
+            k: item.image
           }, item.image ? {} : {}, {
-            j: index
+            l: index
           });
         }),
         d: sku_data.value.length,
-        e: common_vendor.o(($event) => popupShow.value = false),
-        f: common_vendor.o(submitSkuAttr),
-        g: common_vendor.f(sto_att.value, (item, index, i0) => {
+        e: common_vendor.o(newSpecs),
+        f: common_vendor.o(($event) => popupShow.value = false),
+        g: common_vendor.o(submitSkuAttr),
+        h: common_vendor.f(sto_att.value, (item, index, i0) => {
           return {
-            a: common_vendor.t(item.title),
+            a: common_vendor.t(index + 1),
             b: item.attr,
             c: common_vendor.o(($event) => item.attr = $event.detail.value, index),
             d: index
           };
         }),
-        h: popupShow.value
+        i: popupShow.value
       };
     };
   }

@@ -16,8 +16,8 @@
 	<!-- 规格生成 -->
 	<view v-for="(item, index) in sku_data" :key="index" class="attribute gener">
 		<view class="edit specs-delete">
-			<text>规格1</text>
-			<text v-if="sku_data.length">删除</text>
+			<text>规格{{ index + 1 }}</text>
+			<text v-if="sku_data.length" @click="deleteSpecs(index)">删除</text>
 		</view>
 		<view v-for="(item_add, item_index) in item.att_data" :key="item_index" class="edit entry">
 			<text>{{ item_add.att_name }}</text>
@@ -41,7 +41,7 @@
 		</view>
 	</view>
 	<!-- 添加规格 -->
-	<view class="attribute new-specs">
+	<view class="attribute new-specs" @click="newSpecs">
 		<image src="/static/detail/jiahao.svg" mode="widthFix"></image>
 		<text>规格</text>
 	</view>
@@ -54,7 +54,7 @@
 				<text @click="submitSkuAttr">提交</text>
 			</view>
 			<view  v-for="(item, index) in  sto_att" :key="index" class="att-input">
-				<text>属性{{ item.title }}</text>
+				<text>属性{{ index + 1}}</text>
 				<input v-model="item.attr" placeholder="输入属性" placeholder-class="I-style" :cursor-spacing="50" />
 			</view>
 		</view>
@@ -66,7 +66,6 @@
 	const popupShow = ref(false); // 控制弹窗
 	const sku_data = ref([ // 规格生成数据
 			{
-				title: 1,
 				att_data: [], // 属性 att_name  att_value
 				price: '', // 价钱
 				stock: '', // 库存
@@ -107,7 +106,21 @@
 		for(const item of sku_data.value) {
 			item.att_data = skuValue.value;
 		}
-		console.log(sku_data.value, "===>sku_data.value")
+	}
+	
+	// ======【 新增规格 】======
+	const newSpecs = () => {
+		const newAttData = {
+			att_data: skuValue.value,
+			price: '',
+			stock: '',
+			image: ''
+		}
+		sku_data.value.push(newAttData);
+	}
+	// =====【 删除规格 】=======
+	const deleteSpecs = (index) => {
+		sku_data.value.splice(index, 1);
 	}
 </script>
 
