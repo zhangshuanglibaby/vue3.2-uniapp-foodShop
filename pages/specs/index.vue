@@ -6,7 +6,7 @@
 			<text @click="popupShow = true">编辑</text>
 		</view>
 		<view class="checkbox">
-			<checkbox-group style="display: flex;">
+			<checkbox-group style="display: flex;" @change="onChangeSku" >
 				<label v-for="(item, index) in skuCheckboxList" :key="index">
 					<checkbox :checked="item.checked" :value="item.value" color="#e96c56" />{{ item.value }}
 				</label>
@@ -97,6 +97,7 @@
 	// ======【计算规格生成】=====
 	// 勾选的规格属性值
 	const skuValue = computed(() => {
+		
 		return skuCheckboxList.value.filter(item => item.checked).map(item => {
 			return { att_name: item.value, att_value: ''  }
 		})
@@ -106,6 +107,15 @@
 		for(const item of sku_data.value) {
 			item.att_data = skuValue.value;
 		}
+	}
+	// 监听勾选规格属性
+	const onChangeSku = (e) => {
+		console.log(e, 111);
+		const valueArr = e.detail.value;
+		for(const item of skuCheckboxList.value) {
+			item.checked = valueArr.includes(item.value);
+		}
+		calSku();
 	}
 	
 	// ======【 新增规格 】======

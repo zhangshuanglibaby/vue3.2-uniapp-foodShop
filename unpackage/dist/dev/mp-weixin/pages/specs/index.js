@@ -44,6 +44,14 @@ const _sfc_main = {
         item.att_data = skuValue.value;
       }
     };
+    const onChangeSku = (e) => {
+      console.log(e, 111);
+      const valueArr = e.detail.value;
+      for (const item of skuCheckboxList.value) {
+        item.checked = valueArr.includes(item.value);
+      }
+      calSku();
+    };
     const newSpecs = () => {
       const newAttData = {
         att_data: skuValue.value,
@@ -67,7 +75,8 @@ const _sfc_main = {
             d: index
           };
         }),
-        c: common_vendor.f(sku_data.value, (item, index, i0) => {
+        c: common_vendor.o(onChangeSku),
+        d: common_vendor.f(sku_data.value, (item, index, i0) => {
           return common_vendor.e({
             a: common_vendor.t(index + 1)
           }, sku_data.value.length ? {
@@ -94,11 +103,11 @@ const _sfc_main = {
             l: index
           });
         }),
-        d: sku_data.value.length,
-        e: common_vendor.o(newSpecs),
-        f: common_vendor.o(($event) => popupShow.value = false),
-        g: common_vendor.o(submitSkuAttr),
-        h: common_vendor.f(sto_att.value, (item, index, i0) => {
+        e: sku_data.value.length,
+        f: common_vendor.o(newSpecs),
+        g: common_vendor.o(($event) => popupShow.value = false),
+        h: common_vendor.o(submitSkuAttr),
+        i: common_vendor.f(sto_att.value, (item, index, i0) => {
           return {
             a: common_vendor.t(index + 1),
             b: item.attr,
@@ -106,7 +115,7 @@ const _sfc_main = {
             d: index
           };
         }),
-        i: popupShow.value
+        j: popupShow.value
       };
     };
   }
