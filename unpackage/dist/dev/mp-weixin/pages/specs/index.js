@@ -1,6 +1,7 @@
 "use strict";
 const common_vendor = require("../../common/vendor.js");
 const Acc_config_media = require("../../Acc.config/media.js");
+require("../../Acc.config/init.js");
 const _sfc_main = {
   __name: "index",
   setup(__props) {
@@ -66,8 +67,16 @@ const _sfc_main = {
       sku_data.value.splice(index, 1);
     };
     const upload = async (index) => {
-      const local = await new Acc_config_media.Upload().image();
-      console.log(local);
+      try {
+        const local = await new Acc_config_media.Upload().image();
+        common_vendor.wx$1.showLoading({ title: "上传中", mask: true });
+        const imageUrl = await new Acc_config_media.Upload().cloud(local[0].tempFilePath);
+        sku_data.value[index].image = imageUrl;
+        common_vendor.wx$1.hideLoading();
+      } catch (e) {
+        common_vendor.wx$1.hideLoading();
+        new Acc_config_media.Feedback().toast("上传失败");
+      }
     };
     return (_ctx, _cache) => {
       return {
@@ -102,12 +111,14 @@ const _sfc_main = {
             h: common_vendor.o(($event) => item.stock = $event.detail.value, index),
             i: !item.image
           }, !item.image ? {
-            j: common_vendor.o(($event) => upload(), index)
+            j: common_vendor.o(($event) => upload(index), index)
           } : {}, {
             k: item.image,
             l: item.image
-          }, item.image ? {} : {}, {
-            m: index
+          }, item.image ? {
+            m: common_vendor.o((...args) => _ctx.deleteImage && _ctx.deleteImage(...args), index)
+          } : {}, {
+            n: index
           });
         }),
         e: sku_data.value.length,

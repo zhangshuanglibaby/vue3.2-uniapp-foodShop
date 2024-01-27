@@ -37,7 +37,7 @@
 		<view class="specs-image">
 			<image v-if="!item.image" src="/static/detail/shuxing-img.png" mode="aspectFill"  @click="upload(index)"></image>
 			<image :src="item.image" mode="aspectFill"></image>
-			<image v-if="item.image" src="/static/detail/shanchu.svg" class="delete-img" mode="widthFix"></image>
+			<image v-if="item.image" src="/static/detail/shanchu.svg" class="delete-img" mode="widthFix" @click="deleteImage"></image>
 		</view>
 	</view>
 	<!-- 添加规格 -->
@@ -63,7 +63,8 @@
 
 <script setup>
 	import { ref, computed } from "vue";
-	import { Upload } from "@/Acc.config/media.js"
+	import { Feedback, Upload } from "@/Acc.config/media.js";
+	
 	const popupShow = ref(false); // 控制弹窗
 	const sku_data = ref([ // 规格生成数据
 			{
@@ -136,8 +137,16 @@
 	
 	// ======【 上传图片 】======
 	const upload = async (index) => {
-		const local = await new Upload().image();
-		console.log(local);
+		try{
+			const local = await new Upload().image(); // 获取上传图片的临时路径
+			wx.showLoading({ title: "上传中", mask: true })
+			const imageUrl = await new Upload().cloud(local[0].tempFilePath); // 获取上传到云存储的实际路径
+			sku_data.value[index].image = imageUrl;
+			wx.hideLoading()
+		}catch(e){
+			wx.hideLoading();
+			new Feedback().toast("上传失败");
+		}
 	}
 </script>
 
