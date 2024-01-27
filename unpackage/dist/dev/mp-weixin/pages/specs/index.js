@@ -81,6 +81,9 @@ const _sfc_main = {
     const deleteImage = (index) => {
       sku_data.value[index].image = "";
     };
+    const previewImage = (image) => {
+      new Acc_config_media.Upload().preview(image, [image]);
+    };
     return (_ctx, _cache) => {
       return {
         a: common_vendor.o(($event) => popupShow.value = true),
@@ -117,11 +120,12 @@ const _sfc_main = {
             j: common_vendor.o(($event) => upload(index), index)
           } : {}, {
             k: item.image,
-            l: item.image
+            l: common_vendor.o(($event) => previewImage(item.image), index),
+            m: item.image
           }, item.image ? {
-            m: common_vendor.o(($event) => deleteImage(index), index)
+            n: common_vendor.o(($event) => deleteImage(index), index)
           } : {}, {
-            n: index
+            o: index
           });
         }),
         e: sku_data.value.length,

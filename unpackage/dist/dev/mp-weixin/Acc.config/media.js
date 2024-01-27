@@ -52,6 +52,15 @@ class Upload {
       });
     });
   }
+  // 预览图片
+  preview(image, arr) {
+    common_vendor.wx$1.previewImage({
+      current: image,
+      // 当前显示图片的http链接
+      urls: arr
+      // 需要预览的图片http链接列表
+    });
+  }
 }
 exports.Feedback = Feedback;
 exports.Upload = Upload;

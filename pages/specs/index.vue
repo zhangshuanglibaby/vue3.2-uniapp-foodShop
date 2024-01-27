@@ -36,7 +36,7 @@
 		<!-- 上传图片 -->
 		<view class="specs-image">
 			<image v-if="!item.image" src="/static/detail/shuxing-img.png" mode="aspectFill"  @click="upload(index)"></image>
-			<image :src="item.image" mode="aspectFill"></image>
+			<image :src="item.image" mode="aspectFill" @click="previewImage(item.image)"></image>
 			<image v-if="item.image" src="/static/detail/shanchu.svg" class="delete-img" mode="widthFix" @click="deleteImage(index)"></image>
 		</view>
 	</view>
@@ -59,6 +59,14 @@
 			</view>
 		</view>
 	</page-container>
+	<!-- 底部按钮 -->
+	<div style="height:300rpx"></div>
+	<view class="newly-added-view">
+		<view class="Submit">
+			<text>取消</text>
+			<text>提交</text>
+		</view>
+	</view>
 </template>
 
 <script setup>
@@ -152,6 +160,10 @@
 	// 规格 -删除图片
 	const deleteImage = (index) => {
 		sku_data.value[index].image = "";
+	}
+	// 规格 -预览图片
+	const previewImage = (image) => {
+		new Upload().preview(image, [image]);
 	}
 </script>
 
