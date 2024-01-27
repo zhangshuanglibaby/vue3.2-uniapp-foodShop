@@ -78,6 +78,9 @@ const _sfc_main = {
         new Acc_config_media.Feedback().toast("上传失败");
       }
     };
+    const deleteImage = (index) => {
+      sku_data.value[index].image = "";
+    };
     return (_ctx, _cache) => {
       return {
         a: common_vendor.o(($event) => popupShow.value = true),
@@ -116,7 +119,7 @@ const _sfc_main = {
             k: item.image,
             l: item.image
           }, item.image ? {
-            m: common_vendor.o((...args) => _ctx.deleteImage && _ctx.deleteImage(...args), index)
+            m: common_vendor.o(($event) => deleteImage(index), index)
           } : {}, {
             n: index
           });

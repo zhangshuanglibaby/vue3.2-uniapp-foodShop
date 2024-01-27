@@ -37,7 +37,7 @@
 		<view class="specs-image">
 			<image v-if="!item.image" src="/static/detail/shuxing-img.png" mode="aspectFill"  @click="upload(index)"></image>
 			<image :src="item.image" mode="aspectFill"></image>
-			<image v-if="item.image" src="/static/detail/shanchu.svg" class="delete-img" mode="widthFix" @click="deleteImage"></image>
+			<image v-if="item.image" src="/static/detail/shanchu.svg" class="delete-img" mode="widthFix" @click="deleteImage(index)"></image>
 		</view>
 	</view>
 	<!-- 添加规格 -->
@@ -136,6 +136,7 @@
 	}
 	
 	// ======【 上传图片 】======
+	// 规格-上传图片到云存储
 	const upload = async (index) => {
 		try{
 			const local = await new Upload().image(); // 获取上传图片的临时路径
@@ -147,6 +148,10 @@
 			wx.hideLoading();
 			new Feedback().toast("上传失败");
 		}
+	}
+	// 规格 -删除图片
+	const deleteImage = (index) => {
+		sku_data.value[index].image = "";
 	}
 </script>
 
