@@ -1,5 +1,6 @@
 "use strict";
 const common_vendor = require("../../common/vendor.js");
+const Acc_config_media = require("../../Acc.config/media.js");
 const _sfc_main = {
   __name: "index",
   setup(__props) {
@@ -64,6 +65,10 @@ const _sfc_main = {
     const deleteSpecs = (index) => {
       sku_data.value.splice(index, 1);
     };
+    const upload = async (index) => {
+      const local = await new Acc_config_media.Upload().image();
+      console.log(local);
+    };
     return (_ctx, _cache) => {
       return {
         a: common_vendor.o(($event) => popupShow.value = true),
@@ -96,11 +101,13 @@ const _sfc_main = {
             g: item.stock,
             h: common_vendor.o(($event) => item.stock = $event.detail.value, index),
             i: !item.image
-          }, !item.image ? {} : {}, {
-            j: item.image,
-            k: item.image
+          }, !item.image ? {
+            j: common_vendor.o(($event) => upload(), index)
+          } : {}, {
+            k: item.image,
+            l: item.image
           }, item.image ? {} : {}, {
-            l: index
+            m: index
           });
         }),
         e: sku_data.value.length,

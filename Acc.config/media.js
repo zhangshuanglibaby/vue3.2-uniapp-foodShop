@@ -15,4 +15,23 @@ class Feedback {
 	}
 }
 
-export { Feedback }
+// 上传
+class Upload {
+	// 上传本地图片
+	image(count = 1, type='image') {
+		return new Promise((resolve, reject) => {
+			wx.chooseMedia({
+			  count,
+			  mediaType: [type],
+			  sourceType: ['album'],
+			  success(res) {
+					resolve(res.tempFiles);
+			  },
+				fail(err) {
+					reject(err);
+				}
+			})
+		})
+	}
+}
+export { Feedback, Upload }

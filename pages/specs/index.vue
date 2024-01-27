@@ -35,7 +35,7 @@
 		</view>
 		<!-- 上传图片 -->
 		<view class="specs-image">
-			<image  v-if="!item.image" src="/static/detail/shuxing-img.png" mode="aspectFill"></image>
+			<image v-if="!item.image" src="/static/detail/shuxing-img.png" mode="aspectFill"  @click="upload(index)"></image>
 			<image :src="item.image" mode="aspectFill"></image>
 			<image v-if="item.image" src="/static/detail/shanchu.svg" class="delete-img" mode="widthFix"></image>
 		</view>
@@ -63,6 +63,7 @@
 
 <script setup>
 	import { ref, computed } from "vue";
+	import { Upload } from "@/Acc.config/media.js"
 	const popupShow = ref(false); // 控制弹窗
 	const sku_data = ref([ // 规格生成数据
 			{
@@ -131,6 +132,12 @@
 	// =====【 删除规格 】=======
 	const deleteSpecs = (index) => {
 		sku_data.value.splice(index, 1);
+	}
+	
+	// ======【 上传图片 】======
+	const upload = async (index) => {
+		const local = await new Upload().image();
+		console.log(local);
 	}
 </script>
 

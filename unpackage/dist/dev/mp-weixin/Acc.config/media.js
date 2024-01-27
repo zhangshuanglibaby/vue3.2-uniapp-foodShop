@@ -14,4 +14,23 @@ class Feedback {
     });
   }
 }
+class Upload {
+  // 上传本地图片
+  image(count = 1, type = "image") {
+    return new Promise((resolve, reject) => {
+      common_vendor.wx$1.chooseMedia({
+        count,
+        mediaType: [type],
+        sourceType: ["album"],
+        success(res) {
+          resolve(res.tempFiles);
+        },
+        fail(err) {
+          reject(err);
+        }
+      });
+    });
+  }
+}
 exports.Feedback = Feedback;
+exports.Upload = Upload;
