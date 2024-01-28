@@ -17,11 +17,11 @@
 	<view v-for="(item, index) in sku_data" :key="index" class="attribute gener">
 		<view class="edit specs-delete">
 			<text>规格{{ index + 1 }}</text>
-			<text v-if="sku_data.length" @click="deleteSpecs(index)">删除</text>
+			<text v-if="sku_data.length > 1" @click="deleteSpecs(index)">删除</text>
 		</view>
 		<view v-for="(item_add, item_index) in item.att_data" :key="item_index" class="edit entry">
 			<text>{{ item_add.att_name }}</text>
-			<input v-model="item.att_value" type="text" :placeholder="`请输入${item_add.att_name}`" placeholder-class="I-style"  :cursor-spacing="50"/>
+			<input v-model="item_add.att_value" type="text" :placeholder="`请输入${item_add.att_name}`" placeholder-class="I-style"  :cursor-spacing="50"/>
 		</view>
 		<view class="edit entry">
 			<text>价格</text>
@@ -63,7 +63,7 @@
 	<div style="height:300rpx"></div>
 	<view class="newly-added-view">
 		<view class="Submit">
-			<text>取消</text>
+			<text @click="back">取消</text>
 			<text @click="submit">提交</text>
 		</view>
 	</view>
@@ -72,6 +72,7 @@
 <script setup>
 	import { ref, computed } from "vue";
 	import { Feedback, Upload } from "@/Acc.config/media.js";
+	import { sku_val } from "@/Acc.config/answer.js";
 	
 	const popupShow = ref(false); // 控制弹窗
 	const sku_data = ref([ // 规格生成数据
@@ -106,16 +107,18 @@
 	
 	// ======【计算规格生成】=====
 	// 勾选的规格属性值
-	const skuValue = computed(() => {
-		
-		return skuCheckboxList.value.filter(item => item.checked).map(item => {
-			return { att_name: item.value, att_value: ''  }
-		})
+	const checkedSkuValue = computed(() => {
+		return skuCheckboxList.value.filter(item => item.checked).map(item => item.value);
 	})
+	
 	// 计算规格属性生成
 	const calSku = () => {
 		for(const item of sku_data.value) {
-			item.att_data = skuValue.value;
+			const att_data = checkedSkuValue.value.map(att_name => {
+				const target = item.att_data.find(att => att.att_name === att_name);
+				return { att_name, att_value: target && target.att_value || "" };
+			})
+			item.att_data = att_data;
 		}
 	}
 	// 监听勾选规格属性
@@ -129,8 +132,11 @@
 	
 	// ======【 新增规格 】======
 	const newSpecs = () => {
+		const att_data = skuCheckboxList.value.filter(item => item.checked).map(item => {
+			return { att_name: item.value, att_value: ''  }
+		})
 		const newAttData = {
-			att_data: skuValue.value,
+			att_data,
 			price: '',
 			stock: '',
 			image: ''
@@ -166,10 +172,14 @@
 	}
 	
 	// ====== 【 提交 】======
+	// 返回上一页
+	const back = () => {
+		wx.navigateBack({ delta: 1 })
+	}
 	// 校验
 	const validate = () => {
 		// 如果没有选择规格
-		if(!skuValue.value.length) {
+		if(!checkedSkuValue.value.length) {
 			new Feedback("请完善规格设置").toast();
 			return false;
 		}
@@ -178,9 +188,11 @@
 		const imageFlag = sku_data.value.every(item => item.image);
 		let attDataArr = [];
 		sku_data.value.map(item  => {
-			attDataArr.push(item)
+			attDataArr = attDataArr.concat([...item.att_data])
 		});
+		console.log(attDataArr, "===>attDataArr");
 		const attValueFlag = attDataArr.every(item => item.att_value);
+		console.log(attValueFlag, "====》attValueFlag");
 		if(!priceFlag || !stockFlag || !imageFlag || !attValueFlag) {
 			new Feedback("请完善规格设置").toast();
 			return false;
@@ -196,7 +208,10 @@
 			item.price = Number(item.price);
 			item.stock = Number(item.stock);
 		}
-		console.log(sku_data.value);
+		// 存储规格数据到公用的响应式传值文件中
+		sku_val.value = sku_data.value;
+		// 返回上一页
+		back();
 	}
 </script>
 

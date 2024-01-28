@@ -1,6 +1,7 @@
 "use strict";
 const common_vendor = require("../../common/vendor.js");
 const Acc_config_media = require("../../Acc.config/media.js");
+const Acc_config_answer = require("../../Acc.config/answer.js");
 require("../../Acc.config/init.js");
 const _sfc_main = {
   __name: "index",
@@ -36,14 +37,16 @@ const _sfc_main = {
       popupShow.value = false;
       calSku();
     };
-    const skuValue = common_vendor.computed(() => {
-      return skuCheckboxList.value.filter((item) => item.checked).map((item) => {
-        return { att_name: item.value, att_value: "" };
-      });
+    const checkedSkuValue = common_vendor.computed(() => {
+      return skuCheckboxList.value.filter((item) => item.checked).map((item) => item.value);
     });
     const calSku = () => {
       for (const item of sku_data.value) {
-        item.att_data = skuValue.value;
+        const att_data = checkedSkuValue.value.map((att_name) => {
+          const target = item.att_data.find((att) => att.att_name === att_name);
+          return { att_name, att_value: target && target.att_value || "" };
+        });
+        item.att_data = att_data;
       }
     };
     const onChangeSku = (e) => {
@@ -54,8 +57,11 @@ const _sfc_main = {
       calSku();
     };
     const newSpecs = () => {
+      const att_data = skuCheckboxList.value.filter((item) => item.checked).map((item) => {
+        return { att_name: item.value, att_value: "" };
+      });
       const newAttData = {
-        att_data: skuValue.value,
+        att_data,
         price: "",
         stock: "",
         image: ""
@@ -83,8 +89,11 @@ const _sfc_main = {
     const previewImage = (image) => {
       new Acc_config_media.Upload().preview(image, [image]);
     };
+    const back = () => {
+      common_vendor.wx$1.navigateBack({ delta: 1 });
+    };
     const validate = () => {
-      if (!skuValue.value.length) {
+      if (!checkedSkuValue.value.length) {
         new Acc_config_media.Feedback("请完善规格设置").toast();
         return false;
       }
@@ -93,9 +102,11 @@ const _sfc_main = {
       const imageFlag = sku_data.value.every((item) => item.image);
       let attDataArr = [];
       sku_data.value.map((item) => {
-        attDataArr.push(item);
+        attDataArr = attDataArr.concat([...item.att_data]);
       });
+      console.log(attDataArr, "===>attDataArr");
       const attValueFlag = attDataArr.every((item) => item.att_value);
+      console.log(attValueFlag, "====》attValueFlag");
       if (!priceFlag || !stockFlag || !imageFlag || !attValueFlag) {
         new Acc_config_media.Feedback("请完善规格设置").toast();
         return false;
@@ -110,7 +121,8 @@ const _sfc_main = {
         item.price = Number(item.price);
         item.stock = Number(item.stock);
       }
-      console.log(sku_data.value);
+      Acc_config_answer.sku_val.value = sku_data.value;
+      back();
     };
     return (_ctx, _cache) => {
       return {
@@ -127,36 +139,36 @@ const _sfc_main = {
         d: common_vendor.f(sku_data.value, (item, index, i0) => {
           return common_vendor.e({
             a: common_vendor.t(index + 1)
-          }, sku_data.value.length ? {
+          }, sku_data.value.length > 1 ? {
             b: common_vendor.o(($event) => deleteSpecs(index), index)
           } : {}, {
             c: common_vendor.f(item.att_data, (item_add, item_index, i1) => {
               return {
                 a: common_vendor.t(item_add.att_name),
                 b: `请输入${item_add.att_name}`,
-                c: common_vendor.o(($event) => item.att_value = $event.detail.value, item_index),
-                d: item_index
+                c: item_add.att_value,
+                d: common_vendor.o(($event) => item_add.att_value = $event.detail.value, item_index),
+                e: item_index
               };
             }),
-            d: item.att_value,
-            e: item.price,
-            f: common_vendor.o(($event) => item.price = $event.detail.value, index),
-            g: item.stock,
-            h: common_vendor.o(($event) => item.stock = $event.detail.value, index),
-            i: !item.image
+            d: item.price,
+            e: common_vendor.o(($event) => item.price = $event.detail.value, index),
+            f: item.stock,
+            g: common_vendor.o(($event) => item.stock = $event.detail.value, index),
+            h: !item.image
           }, !item.image ? {
-            j: common_vendor.o(($event) => upload(index), index)
+            i: common_vendor.o(($event) => upload(index), index)
           } : {}, {
-            k: item.image,
-            l: common_vendor.o(($event) => previewImage(item.image), index),
-            m: item.image
+            j: item.image,
+            k: common_vendor.o(($event) => previewImage(item.image), index),
+            l: item.image
           }, item.image ? {
-            n: common_vendor.o(($event) => deleteImage(index), index)
+            m: common_vendor.o(($event) => deleteImage(index), index)
           } : {}, {
-            o: index
+            n: index
           });
         }),
-        e: sku_data.value.length,
+        e: sku_data.value.length > 1,
         f: common_vendor.o(newSpecs),
         g: common_vendor.o(($event) => popupShow.value = false),
         h: common_vendor.o(submitSkuAttr),
@@ -169,7 +181,8 @@ const _sfc_main = {
           };
         }),
         j: popupShow.value,
-        k: common_vendor.o(submit)
+        k: common_vendor.o(back),
+        l: common_vendor.o(submit)
       };
     };
   }

@@ -52,29 +52,32 @@
 	</view>
 	<!-- 创建规格 -->
 	<view class="specs-view">
-		<view class="specs-title">
+		<view class="specs-title" @click="jumpToSpecs">
 			<text>创建规格(可选)</text>
 			<image src="/static/detail/xiangyou-jiantou.svg" mode="widthFix"></image>
 		</view>
-		<view class="specs-image" style="display: none;">
+		<view v-if="!specs_data.length" class="specs-image">
 			<image src="/static/detail/guige-img.jpg" mode="widthFix"></image>
 		</view>
 		<!-- 已有规格展示 -->
-		<view class="Se-specs S-flex">
-			<view class="S-top">
-				<image src="../../static/detail/026.jpg" mode="aspectFill"></image>
-			</view>
-			<view class="S-top">
-				<view class="S-flex S-right">
-					<text>微辣</text>
+		<template v-else>
+			<view v-for="(item, index) in specs_data" :key="index" class="Se-specs S-flex">
+				<view>
+					<image :src="item.image" mode="aspectFill"></image>
 				</view>
-				<view class="S-flex S-right S-stock">
-					<text>库存</text>
-					<text>10件</text>
+				<view class="S-top">
+					<view class="S-flex S-right">
+						<text v-for="(attr,attr_index) in item.att_data" :key="attr_index">{{ attr.att_value }}</text>
+					</view>
+					<view class="S-flex S-right S-stock">
+						<text>库存</text>
+						<text>{{ item.stock }}件</text>
+					</view>
 				</view>
+				<view class="S-price">{{ item.price }}</view>
 			</view>
-			<view class="S-price">10</view>
-		</view>
+		</template>
+		
 	</view>
 	<!-- 详情图 -->
 	<view class="specs-view">
@@ -97,7 +100,21 @@
 	</view>
 </template>
 
-<script>
+<script setup>
+	import { ref, watch } from "vue";
+	import { sku_val } from "@/Acc.config/answer.js"
+	
+	// ======【 跳转到添加规格页 】======
+	const jumpToSpecs = () => {
+		wx.navigateTo({ url: "/pages/specs/index" });
+	}
+	
+	// ======【 监听添加规格页的数据 】======
+	const specs_data = ref([]); // 存储从添加规格页面创建的数据
+	watch(() => sku_val.value, (newVal,oldVal) => {
+		console.log(newVal, "====>specs_data");
+		specs_data.value = newVal;
+	})
 </script>
 
 <style>

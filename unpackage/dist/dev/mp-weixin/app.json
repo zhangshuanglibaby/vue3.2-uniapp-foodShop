@@ -1,7 +1,7 @@
 {
   "pages": [
-    "pages/specs/index",
     "pages/goods-admin/index",
+    "pages/specs/index",
     "pages/sort-admin/index",
     "pages/commodity/index",
     "pages/index/index",
