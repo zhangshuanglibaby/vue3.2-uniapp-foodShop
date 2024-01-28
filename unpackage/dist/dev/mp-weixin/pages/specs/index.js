@@ -22,9 +22,9 @@ const _sfc_main = {
     ]);
     const sto_att = common_vendor.ref([
       // 创建的属性
-      { attr: "", title: 1 },
-      { attr: "", title: 2 },
-      { attr: "", title: 3 }
+      { attr: "" },
+      { attr: "" },
+      { attr: "" }
     ]);
     const skuCheckboxList = common_vendor.ref([]);
     const submitSkuAttr = () => {
@@ -122,8 +122,26 @@ const _sfc_main = {
         item.stock = Number(item.stock);
       }
       Acc_config_answer.sku_val.value = sku_data.value;
+      Acc_config_answer.sku_checkbox_list.value = skuCheckboxList.value;
       back();
     };
+    const render = () => {
+      if (Acc_config_answer.sku_val.value.length) {
+        console.log("11");
+        sku_data.value = Acc_config_answer.sku_val.value;
+      }
+      if (Acc_config_answer.sku_checkbox_list.value.length) {
+        skuCheckboxList.value = Acc_config_answer.sku_checkbox_list.value;
+        for (const index in skuCheckboxList.value) {
+          sto_att.value[index].attr = skuCheckboxList.value[index].value;
+        }
+      }
+      console.log("没有纸");
+    };
+    common_vendor.onLoad(() => {
+      console.log("添加规格耶");
+      render();
+    });
     return (_ctx, _cache) => {
       return {
         a: common_vendor.o(($event) => popupShow.value = true),

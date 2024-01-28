@@ -71,8 +71,9 @@
 
 <script setup>
 	import { ref, computed } from "vue";
+	import { onLoad } from "@dcloudio/uni-app";
 	import { Feedback, Upload } from "@/Acc.config/media.js";
-	import { sku_val } from "@/Acc.config/answer.js";
+	import { sku_val, sku_checkbox_list } from "@/Acc.config/answer.js";
 	
 	const popupShow = ref(false); // 控制弹窗
 	const sku_data = ref([ // 规格生成数据
@@ -84,9 +85,9 @@
 			}
 		])
 	const sto_att = ref([ // 创建的属性
-		{ attr: '', title: 1 },
-		{ attr: '', title: 2 },
-		{ attr: '', title: 3 },
+		{ attr: ''},
+		{ attr: ''},
+		{ attr: ''},
 	])
 	
 	// 提交商品属性规格
@@ -210,9 +211,37 @@
 		}
 		// 存储规格数据到公用的响应式传值文件中
 		sku_val.value = sku_data.value;
+		sku_checkbox_list.value = skuCheckboxList.value;
 		// 返回上一页
 		back();
 	}
+	
+	// ====== 【 页面数据返显 】======
+	const render = () => {
+		// 查看存储在公用的响应式的规格数据是否有值
+		if(sku_val.value.length) {
+			console.log("11")
+			// 让数据返显
+			sku_data.value = sku_val.value;
+		}
+	
+		if(sku_checkbox_list.value.length) {
+			// 返显规格属性多选框
+			skuCheckboxList.value = sku_checkbox_list.value;
+			// 返显弹窗的创建属性值
+			for(const index in skuCheckboxList.value) {
+				sto_att.value[index].attr = skuCheckboxList.value[index].value;
+			}
+			// sto_att.value = skuCheckboxList.value.map(item => {
+			// 	return { attr: item.value }
+			// });
+		}
+		console.log("没有纸")
+	}
+	onLoad(() => {
+		console.log("添加规格耶");
+		render();
+	})
 </script>
 
 <style>
