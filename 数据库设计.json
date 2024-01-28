@@ -6,3 +6,22 @@
 		"quantity": 0 // 数量
 	}
 ]
+
+/* 商品规格数据库 goods */
+[
+	{
+		_id: '该商品的唯一标识,商品id',
+		goods_title: '商品标题',
+		goods_banner: [商品横幅],
+		goods_cover: '商品封面图',
+		video_url: '短视频链接',
+		category: '所属分类',
+		goods_price: '商品价格',
+		stock: '库存',
+		sku: 'true or false 是否有sku规格',
+		goods_details: [商品详情图],
+		sold: '商品已售多少',
+		shelves: '商品上架与否 true or false',
+		seckill: '该商品是否参与秒杀 true or false'
+	}
+]
