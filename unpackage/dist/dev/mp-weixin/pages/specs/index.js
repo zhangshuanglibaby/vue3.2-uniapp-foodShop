@@ -47,7 +47,6 @@ const _sfc_main = {
       }
     };
     const onChangeSku = (e) => {
-      console.log(e, 111);
       const valueArr = e.detail.value;
       for (const item of skuCheckboxList.value) {
         item.checked = valueArr.includes(item.value);
@@ -75,7 +74,7 @@ const _sfc_main = {
         common_vendor.wx$1.hideLoading();
       } catch (e) {
         common_vendor.wx$1.hideLoading();
-        new Acc_config_media.Feedback().toast("上传失败");
+        new Acc_config_media.Feedback("上传失败").toast();
       }
     };
     const deleteImage = (index) => {
@@ -83,6 +82,35 @@ const _sfc_main = {
     };
     const previewImage = (image) => {
       new Acc_config_media.Upload().preview(image, [image]);
+    };
+    const validate = () => {
+      if (!skuValue.value.length) {
+        new Acc_config_media.Feedback("请完善规格设置").toast();
+        return false;
+      }
+      const priceFlag = sku_data.value.every((item) => item.price);
+      const stockFlag = sku_data.value.every((item) => item.stock);
+      const imageFlag = sku_data.value.every((item) => item.image);
+      let attDataArr = [];
+      sku_data.value.map((item) => {
+        attDataArr.push(item);
+      });
+      const attValueFlag = attDataArr.every((item) => item.att_value);
+      if (!priceFlag || !stockFlag || !imageFlag || !attValueFlag) {
+        new Acc_config_media.Feedback("请完善规格设置").toast();
+        return false;
+      }
+      return true;
+    };
+    const submit = () => {
+      const valid = validate();
+      if (!valid)
+        return;
+      for (const item of sku_data.value) {
+        item.price = Number(item.price);
+        item.stock = Number(item.stock);
+      }
+      console.log(sku_data.value);
     };
     return (_ctx, _cache) => {
       return {
@@ -140,7 +168,8 @@ const _sfc_main = {
             d: index
           };
         }),
-        j: popupShow.value
+        j: popupShow.value,
+        k: common_vendor.o(submit)
       };
     };
   }

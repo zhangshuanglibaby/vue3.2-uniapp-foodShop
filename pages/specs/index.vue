@@ -64,7 +64,7 @@
 	<view class="newly-added-view">
 		<view class="Submit">
 			<text>取消</text>
-			<text>提交</text>
+			<text @click="submit">提交</text>
 		</view>
 	</view>
 </template>
@@ -120,7 +120,6 @@
 	}
 	// 监听勾选规格属性
 	const onChangeSku = (e) => {
-		console.log(e, 111);
 		const valueArr = e.detail.value;
 		for(const item of skuCheckboxList.value) {
 			item.checked = valueArr.includes(item.value);
@@ -154,7 +153,7 @@
 			wx.hideLoading()
 		}catch(e){
 			wx.hideLoading();
-			new Feedback().toast("上传失败");
+			new Feedback("上传失败").toast();
 		}
 	}
 	// 规格 -删除图片
@@ -164,6 +163,40 @@
 	// 规格 -预览图片
 	const previewImage = (image) => {
 		new Upload().preview(image, [image]);
+	}
+	
+	// ====== 【 提交 】======
+	// 校验
+	const validate = () => {
+		// 如果没有选择规格
+		if(!skuValue.value.length) {
+			new Feedback("请完善规格设置").toast();
+			return false;
+		}
+		const priceFlag = sku_data.value.every(item => item.price);
+		const stockFlag = sku_data.value.every(item => item.stock);
+		const imageFlag = sku_data.value.every(item => item.image);
+		let attDataArr = [];
+		sku_data.value.map(item  => {
+			attDataArr.push(item)
+		});
+		const attValueFlag = attDataArr.every(item => item.att_value);
+		if(!priceFlag || !stockFlag || !imageFlag || !attValueFlag) {
+			new Feedback("请完善规格设置").toast();
+			return false;
+		}
+		return true;
+	}
+	// 提交
+	const submit = () => {
+		const valid = validate();
+		if(!valid) return;
+		// 将字符串转成数字
+		for(const item of sku_data.value) {
+			item.price = Number(item.price);
+			item.stock = Number(item.stock);
+		}
+		console.log(sku_data.value);
 	}
 </script>
 
