@@ -2,14 +2,16 @@
 	<!-- 上传图片	 -->
 	<view class="goods-top">
 		<view>
-			<input type="text" placeholder="请输入商品标题" placeholder-class="pl-text" />
+			<input v-model="goods_title" type="text" placeholder="请输入商品标题" placeholder-class="pl-text" />
 		</view>
 		<view class="goods-image">
-			<view class="upload-Image">
-				<image src="/static/detail/026.jpg" mode="aspectFill"></image>
-				<image src="/static/detail/shanchu-goods.svg" mode="widthFix"></image>
-			</view>
-			<view>
+			<template v-if="banner_imgs.length">
+				<view class="upload-Image" v-for="(url, index) in banner_imgs" :key="index">
+					<image :src="url" mode="aspectFill" @click="previewBanner(url)"></image>
+					<image src="/static/detail/shanchu-goods.svg" mode="widthFix" @click="deleteBanner(index)"></image>
+				</view>
+			</template>
+			<view @click="uploadBanner">
 				<image src="/static/detail/shuxing-img.png" mode="aspectFill"></image>
 			</view>
 		</view>
@@ -18,14 +20,14 @@
 	<view class="goods-top goods-video">
 		<view class="video-title">
 			<text>上传短视频(可选)</text>
-			<image src="/static/detail/shanchu.svg" mode=""></image>
+			<image src="/static/detail/shanchu.svg" mode="" @click="deleteVideo"></image>
 		</view>
-		<view class="goods-image">
+		<view v-if="!video_url" class="goods-image" @click="uploadVideo">
 			<view>
 				<image src="/static/detail/shuxing-img.png" mode="aspectFill"></image>
 			</view>
-			<video style="display: none"></video>
 		</view>
+		<video v-else :src="video_url"></video>
 	</view>
 	<!-- 所属分类-->
 	<view class="specs-view">
@@ -102,7 +104,39 @@
 
 <script setup>
 	import { computed, ref, watch } from "vue";
-	import { sku_val } from "@/Acc.config/answer.js"
+	import { sku_val } from "@/Acc.config/answer.js";
+	import { Upload } from "@/Acc.config/media.js";
+	
+	const goods_title = ref(''); // 商品标题
+	
+	// ======【 上传图片 】======
+	const banner_imgs = ref([]); // 横幅banner
+	// 上传横幅banner
+	const uploadBanner = async () => {
+		const local = await new Upload().image(9);
+		const url_arr = local.map(item => item.tempFilePath);
+		banner_imgs.value = [...banner_imgs.value, ...url_arr];
+	}
+	// 删除横幅banner
+	const deleteBanner = (index) => {
+		banner_imgs.value.splice(index, 1);
+	}
+	// 预览横幅banner
+	const previewBanner = (url) => {
+		new Upload().preview(url, banner_imgs.value);
+	}
+	
+	// =======【 上传视频 】=======
+	const video_url = ref('');
+	const uploadVideo = async () => {
+		const local = await new Upload().image(1, 'video');
+		console.log(local, "===>local")
+		video_url.value = local[0].tempFilePath;
+	}
+	// 删除视频
+	const deleteVideo = () => {
+		video_url.value = '';
+	}
 	
 	// ======【 跳转到添加规格页 】======
 	const jumpToSpecs = () => {
@@ -129,6 +163,8 @@
 	const totalStock = computed(() => {
 		return specs_data.value.reduce((cur, next) => cur + next.stock, 0);
 	})
+	
+	
 </script>
 
 <style>
