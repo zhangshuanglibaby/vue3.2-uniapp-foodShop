@@ -41,12 +41,12 @@
 	<view class="specs-view price-stock">
 		<view class="">
 			<text>价格</text>
-			<input type="number" placeholder="请输入价格" placeholder-class="I-style" cursor-spacing="50" />
+			<input :value="miniPrice" :disabled="true" type="number" placeholder="请输入价格" placeholder-class="I-style" cursor-spacing="50" />
 			<text>元</text>
 		</view>
 		<view class="">
 			<text>库存</text>
-			<input type="number" placeholder="请输入库存" placeholder-class="I-style" cursor-spacing="50" />
+			<input :value="totalStock" type="number" :disabled="true" placeholder="请输入库存" placeholder-class="I-style" cursor-spacing="50" />
 			<text>件</text>
 		</view>
 	</view>
@@ -101,7 +101,7 @@
 </template>
 
 <script setup>
-	import { ref, watch } from "vue";
+	import { computed, ref, watch } from "vue";
 	import { sku_val } from "@/Acc.config/answer.js"
 	
 	// ======【 跳转到添加规格页 】======
@@ -113,7 +113,21 @@
 	const specs_data = ref([]); // 存储从添加规格页面创建的数据
 	watch(() => sku_val.value, (newVal,oldVal) => {
 		console.log(newVal, "====>specs_data");
-		specs_data.value = newVal;
+		// 数据按价格小到大排序
+		specs_data.value = newVal.sort((a, b) => a.price - b.price);
+	})
+	
+	// ======【 计算最小的价格和总库存】======
+	// 最小价格，因为数据是从小大排序，取数组的第一个就是最小价格
+	const miniPrice = computed(() => {
+		if(specs_data.value.length) {
+			return specs_data.value[0].price;
+		}
+		return 0;
+	})
+	// 库存总和
+	const totalStock = computed(() => {
+		return specs_data.value.reduce((cur, next) => cur + next.stock, 0);
 	})
 </script>
 
