@@ -31,10 +31,10 @@
 	</view>
 	<!-- 所属分类-->
 	<view class="specs-view">
-		<picker mode="selector">
+		<picker mode="selector" :range="sortData.sort_options" range-key="sort_name" @change="changeSort">
 			<view class="sort-title specs-title">
 				<text>所属分类</text>
-				<text>膨化食品</text>
+				<text>{{ sortData.sort_name }}</text>
 				<image src="/static/detail/xiangyou-jiantou.svg" mode="widthFix"></image>
 			</view>
 		</picker>
@@ -86,11 +86,11 @@
 		<view class="specs-title">
 			<text>商品详情</text>
 		</view>
-		<view class="detail-image">
-			<image src="/static/detail/026.jpg" mode="widthFix"></image>
-			<image src="/static/detail/shanchu.svg" mode="widthFix"></image>
+		<view v-for="(url, index) in detail_imgs" :key="index" class="detail-image">
+			<image src="/static/detail/026.jpg" mode="widthFix" @click="previewDetail(url)"></image>
+			<image src="/static/detail/shanchu.svg" mode="widthFix" @click="deleteDetail(index)"></image>
 		</view>
-		<view class="specs-image">
+		<view class="specs-image" @click="uploadDetail">
 			<image src="/static/detail/shpin-img.jpg" mode="widthFix"></image>
 		</view>
 	</view>
@@ -103,9 +103,10 @@
 </template>
 
 <script setup>
-	import { computed, ref, watch } from "vue";
+	import { computed, reactive, ref, watch, onMounted } from "vue";
 	import { sku_val } from "@/Acc.config/answer.js";
 	import { Upload } from "@/Acc.config/media.js";
+	import { init } from "@/Acc.config/init.js";
 	
 	const goods_title = ref(''); // 商品标题
 	
@@ -138,6 +139,30 @@
 		video_url.value = '';
 	}
 	
+	// ====== 【 所属分类 】======
+	const sortData = reactive({
+		sort_options: [], // 分类选项数据
+		sort_name: '', // 当前选中的分类名称
+		sort_id: '' // 当前选中的分类id
+	})
+	// 获取所属分类数据
+	const getSortOptions = async () => {
+		const DB = await init();
+		const { data } = await DB.database().collection('good_sort').field({ _openid: false }).get();
+		sortData.sort_options = data;
+		console.log(sortData.sort_options, "===>sortData.sort_options");
+	}
+	onMounted(() => {
+		getSortOptions();
+	})
+	// 选择分类
+	const changeSort = (event) => {
+		const index = event.detail.value;
+		// 当前选中的分类
+		const currentSort = sortData.sort_options[index];
+		Object.assign(sortData, { sort_name: currentSort.sort_name, sort_id: currentSort._id });
+	}
+	
 	// ======【 跳转到添加规格页 】======
 	const jumpToSpecs = () => {
 		wx.navigateTo({ url: "/pages/specs/index" });
@@ -164,7 +189,21 @@
 		return specs_data.value.reduce((cur, next) => cur + next.stock, 0);
 	})
 	
-	
+	// ======【 上传详情图 】======
+	const detail_imgs = ref([]);
+	const uploadDetail = async () => {
+		const local = await new Upload().image(9);
+		const url_arr = local.map(item => item.tempFilePath);
+		detail_imgs.value = [...detail_imgs.value, ...url_arr];
+	}
+	// 删除商品详情图
+	const deleteDetail = (index) => {
+		detail_imgs.value.splice(index, 1);
+	}
+	// 预览商品详情图
+	const previewDetail = (url) => {
+		new Upload().preview(url, detail_imgs.value);
+	}
 </script>
 
 <style>

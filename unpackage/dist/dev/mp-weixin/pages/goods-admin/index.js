@@ -2,7 +2,7 @@
 const common_vendor = require("../../common/vendor.js");
 const Acc_config_answer = require("../../Acc.config/answer.js");
 const Acc_config_media = require("../../Acc.config/media.js");
-require("../../Acc.config/init.js");
+const Acc_config_init = require("../../Acc.config/init.js");
 const _sfc_main = {
   __name: "index",
   setup(__props) {
@@ -28,6 +28,28 @@ const _sfc_main = {
     const deleteVideo = () => {
       video_url.value = "";
     };
+    const sortData = common_vendor.reactive({
+      sort_options: [],
+      // 分类选项数据
+      sort_name: "",
+      // 当前选中的分类名称
+      sort_id: ""
+      // 当前选中的分类id
+    });
+    const getSortOptions = async () => {
+      const DB = await Acc_config_init.init();
+      const { data } = await DB.database().collection("good_sort").field({ _openid: false }).get();
+      sortData.sort_options = data;
+      console.log(sortData.sort_options, "===>sortData.sort_options");
+    };
+    common_vendor.onMounted(() => {
+      getSortOptions();
+    });
+    const changeSort = (event) => {
+      const index = event.detail.value;
+      const currentSort = sortData.sort_options[index];
+      Object.assign(sortData, { sort_name: currentSort.sort_name, sort_id: currentSort._id });
+    };
     const jumpToSpecs = () => {
       common_vendor.wx$1.navigateTo({ url: "/pages/specs/index" });
     };
@@ -45,6 +67,18 @@ const _sfc_main = {
     const totalStock = common_vendor.computed(() => {
       return specs_data.value.reduce((cur, next) => cur + next.stock, 0);
     });
+    const detail_imgs = common_vendor.ref([]);
+    const uploadDetail = async () => {
+      const local = await new Acc_config_media.Upload().image(9);
+      const url_arr = local.map((item) => item.tempFilePath);
+      detail_imgs.value = [...detail_imgs.value, ...url_arr];
+    };
+    const deleteDetail = (index) => {
+      detail_imgs.value.splice(index, 1);
+    };
+    const previewDetail = (url) => {
+      new Acc_config_media.Upload().preview(url, detail_imgs.value);
+    };
     return (_ctx, _cache) => {
       return common_vendor.e({
         a: goods_title.value,
@@ -68,12 +102,15 @@ const _sfc_main = {
       } : {
         i: video_url.value
       }, {
-        j: common_vendor.unref(miniPrice),
-        k: common_vendor.unref(totalStock),
-        l: common_vendor.o(jumpToSpecs),
-        m: !specs_data.value.length
+        j: common_vendor.t(sortData.sort_name),
+        k: sortData.sort_options,
+        l: common_vendor.o(changeSort),
+        m: common_vendor.unref(miniPrice),
+        n: common_vendor.unref(totalStock),
+        o: common_vendor.o(jumpToSpecs),
+        p: !specs_data.value.length
       }, !specs_data.value.length ? {} : {
-        n: common_vendor.f(specs_data.value, (item, index, i0) => {
+        q: common_vendor.f(specs_data.value, (item, index, i0) => {
           return {
             a: item.image,
             b: common_vendor.f(item.att_data, (attr, attr_index, i1) => {
@@ -87,6 +124,15 @@ const _sfc_main = {
             e: index
           };
         })
+      }, {
+        r: common_vendor.f(detail_imgs.value, (url, index, i0) => {
+          return {
+            a: common_vendor.o(($event) => previewDetail(url), index),
+            b: common_vendor.o(($event) => deleteDetail(index), index),
+            c: index
+          };
+        }),
+        s: common_vendor.o(uploadDetail)
       });
     };
   }
