@@ -43,12 +43,12 @@
 	<view class="specs-view price-stock">
 		<view class="">
 			<text>价格</text>
-			<input :value="miniPrice" :disabled="true" type="number" placeholder="请输入价格" placeholder-class="I-style" cursor-spacing="50" />
+			<input v-model="miniPrice" :disabled="specs_data.length" type="number" placeholder="请输入价格" placeholder-class="I-style" cursor-spacing="50" />
 			<text>元</text>
 		</view>
 		<view class="">
 			<text>库存</text>
-			<input :value="totalStock" type="number" :disabled="true" placeholder="请输入库存" placeholder-class="I-style" cursor-spacing="50" />
+			<input v-model="totalStock" type="number" :disabled="specs_data.length" placeholder="请输入库存" placeholder-class="I-style" cursor-spacing="50" />
 			<text>件</text>
 		</view>
 	</view>
@@ -97,7 +97,7 @@
 	
 	<!-- 底部的新增分类按钮 -->
 	<view style="height: 300rpx;"></view>
-	<view class="newly-added-view back">
+	<view class="newly-added-view back" @click="submit">
 		<view class="newly-added">上架售卖</view>
 	</view>
 </template>
@@ -105,7 +105,7 @@
 <script setup>
 	import { computed, reactive, ref, watch, onMounted } from "vue";
 	import { sku_val } from "@/Acc.config/answer.js";
-	import { Upload } from "@/Acc.config/media.js";
+	import { Feedback, Upload } from "@/Acc.config/media.js";
 	import { init } from "@/Acc.config/init.js";
 	
 	const goods_title = ref(''); // 商品标题
@@ -170,23 +170,15 @@
 	
 	// ======【 监听添加规格页的数据 】======
 	const specs_data = ref([]); // 存储从添加规格页面创建的数据
+	const miniPrice = ref(0); // 最小价格
+	const totalStock = ref(0); // 总库存
 	watch(() => sku_val.value, (newVal,oldVal) => {
 		console.log(newVal, "====>specs_data");
 		// 数据按价格小到大排序
 		specs_data.value = newVal.sort((a, b) => a.price - b.price);
-	})
-	
-	// ======【 计算最小的价格和总库存】======
-	// 最小价格，因为数据是从小大排序，取数组的第一个就是最小价格
-	const miniPrice = computed(() => {
-		if(specs_data.value.length) {
-			return specs_data.value[0].price;
-		}
-		return 0;
-	})
-	// 库存总和
-	const totalStock = computed(() => {
-		return specs_data.value.reduce((cur, next) => cur + next.stock, 0);
+		// 计算最小的价格和总库存
+		miniPrice.value = specs_data.value[0].price;
+		totalStock.value = specs_data.value.reduce((cur, next) => cur + next.stock, 0);
 	})
 	
 	// ======【 上传详情图 】======
@@ -203,6 +195,43 @@
 	// 预览商品详情图
 	const previewDetail = (url) => {
 		new Upload().preview(url, detail_imgs.value);
+	}
+	
+	// ======【 提交】======
+	const valid_message = {
+		goods_title: '请输入商品标题',
+		goods_banner: '请上传商品图片',
+		category: '请选择商品分类',
+		goods_price: '请输入价格',
+		stock: '请输入库存',
+		goods_details: '请上传商品详情'
+	}
+	const submit = async () => {
+		const res = await new Upload().multipleCloud(banner_imgs.value);
+		console.log(res, "====>res");
+		return;
+		// 需要校验的字段
+		const require_field = {
+			goods_title: goods_title.value, // 商品标题
+			goods_banner: banner_imgs.value, // 横幅banner
+			category: sortData.sort_name, // 商品分类
+			goods_price: miniPrice.value, // 价格
+			stock: totalStock.value, // 库存
+			goods_details: detail_imgs.value // 商品详情
+		}
+		const require_keys = Object.keys(require_field);
+		for(const key of require_keys) {
+			if(Array.isArray(require_field[key]) && !require_field[key].length) {
+				new Feedback(valid_message[key]).toast();
+				break;
+			}
+			if(!require_field[key]) {
+				new Feedback(valid_message[key]).toast();
+				break;
+			}
+		}
+		console.log("tongguo")
+		
 	}
 </script>
 

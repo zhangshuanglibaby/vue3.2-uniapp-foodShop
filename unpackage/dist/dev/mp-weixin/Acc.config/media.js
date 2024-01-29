@@ -47,7 +47,21 @@ class Upload {
           resolve(file_url.fileList[0].tempFileURL);
         },
         fail: (err) => {
+          console.log(err, "====>err");
           reject(err);
+        }
+      });
+    });
+  }
+  // 多图上传到云存储
+  multipleCloud(list) {
+    let file_url = [];
+    return new Promise((resolve, reject) => {
+      list.forEach(async (url) => {
+        const res_url = await this.cloud(url);
+        file_url.push(res_url);
+        if (file_url.length === list.length) {
+          resolve(file_url);
         }
       });
     });

@@ -54,18 +54,13 @@ const _sfc_main = {
       common_vendor.wx$1.navigateTo({ url: "/pages/specs/index" });
     };
     const specs_data = common_vendor.ref([]);
+    const miniPrice = common_vendor.ref(0);
+    const totalStock = common_vendor.ref(0);
     common_vendor.watch(() => Acc_config_answer.sku_val.value, (newVal, oldVal) => {
       console.log(newVal, "====>specs_data");
       specs_data.value = newVal.sort((a, b) => a.price - b.price);
-    });
-    const miniPrice = common_vendor.computed(() => {
-      if (specs_data.value.length) {
-        return specs_data.value[0].price;
-      }
-      return 0;
-    });
-    const totalStock = common_vendor.computed(() => {
-      return specs_data.value.reduce((cur, next) => cur + next.stock, 0);
+      miniPrice.value = specs_data.value[0].price;
+      totalStock.value = specs_data.value.reduce((cur, next) => cur + next.stock, 0);
     });
     const detail_imgs = common_vendor.ref([]);
     const uploadDetail = async () => {
@@ -78,6 +73,11 @@ const _sfc_main = {
     };
     const previewDetail = (url) => {
       new Acc_config_media.Upload().preview(url, detail_imgs.value);
+    };
+    const submit = async () => {
+      const res = await new Acc_config_media.Upload().multipleCloud(banner_imgs.value);
+      console.log(res, "====>res");
+      return;
     };
     return (_ctx, _cache) => {
       return common_vendor.e({
@@ -105,12 +105,16 @@ const _sfc_main = {
         j: common_vendor.t(sortData.sort_name),
         k: sortData.sort_options,
         l: common_vendor.o(changeSort),
-        m: common_vendor.unref(miniPrice),
-        n: common_vendor.unref(totalStock),
-        o: common_vendor.o(jumpToSpecs),
-        p: !specs_data.value.length
+        m: specs_data.value.length,
+        n: miniPrice.value,
+        o: common_vendor.o(($event) => miniPrice.value = $event.detail.value),
+        p: specs_data.value.length,
+        q: totalStock.value,
+        r: common_vendor.o(($event) => totalStock.value = $event.detail.value),
+        s: common_vendor.o(jumpToSpecs),
+        t: !specs_data.value.length
       }, !specs_data.value.length ? {} : {
-        q: common_vendor.f(specs_data.value, (item, index, i0) => {
+        v: common_vendor.f(specs_data.value, (item, index, i0) => {
           return {
             a: item.image,
             b: common_vendor.f(item.att_data, (attr, attr_index, i1) => {
@@ -125,14 +129,15 @@ const _sfc_main = {
           };
         })
       }, {
-        r: common_vendor.f(detail_imgs.value, (url, index, i0) => {
+        w: common_vendor.f(detail_imgs.value, (url, index, i0) => {
           return {
             a: common_vendor.o(($event) => previewDetail(url), index),
             b: common_vendor.o(($event) => deleteDetail(index), index),
             c: index
           };
         }),
-        s: common_vendor.o(uploadDetail)
+        x: common_vendor.o(uploadDetail),
+        y: common_vendor.o(submit)
       });
     };
   }
