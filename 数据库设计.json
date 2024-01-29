@@ -7,7 +7,7 @@
 	}
 ]
 
-/* 商品规格数据库 goods */
+/* 商品数据库 goods */
 [
 	{
 		_id: '该商品的唯一标识,商品id',
@@ -23,5 +23,16 @@
 		sold: '商品已售多少',
 		shelves: '商品上架与否 true or false',
 		seckill: '该商品是否参与秒杀 true or false'
+	}
+]
+
+/* 商品规格数据库 goods_sku */
+[
+	{
+		sku_id: "关联的商品id"
+		atta_data: [{ att_name: '', att_value: '' }],
+		price: '价钱',
+		stock: '库存',
+		image: '规格图'
 	}
 ]

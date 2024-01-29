@@ -74,10 +74,87 @@ const _sfc_main = {
     const previewDetail = (url) => {
       new Acc_config_media.Upload().preview(url, detail_imgs.value);
     };
+    const valid_message = {
+      goods_title: "请输入商品标题",
+      goods_banner: "请上传商品图片",
+      category: "请选择商品分类",
+      goods_price: "请输入价格",
+      stock: "请输入库存",
+      goods_details: "请上传商品详情"
+    };
     const submit = async () => {
-      const res = await new Acc_config_media.Upload().multipleCloud(banner_imgs.value);
-      console.log(res, "====>res");
-      return;
+      const require_field = {
+        goods_title: goods_title.value,
+        // 商品标题
+        goods_banner: banner_imgs.value,
+        // 横幅banner
+        category: sortData.sort_name,
+        // 商品分类
+        goods_price: miniPrice.value,
+        // 价格
+        stock: totalStock.value,
+        // 库存
+        goods_details: detail_imgs.value
+        // 商品详情
+      };
+      const require_keys = Object.keys(require_field);
+      for (const key of require_keys) {
+        if (Array.isArray(require_field[key]) && !require_field[key].length) {
+          new Acc_config_media.Feedback(valid_message[key]).toast();
+          return;
+        }
+        if (!require_field[key]) {
+          new Acc_config_media.Feedback(valid_message[key]).toast();
+          return;
+        }
+      }
+      console.log("通过校验");
+      database();
+    };
+    const database = async () => {
+      common_vendor.wx$1.showLoading({ title: "上传中", mask: true });
+      const goods_banner = await new Acc_config_media.Upload().multipleCloud(banner_imgs.value);
+      const goods_details = await new Acc_config_media.Upload().multipleCloud(detail_imgs.value);
+      const video_url2 = "";
+      if (video_url2.value) {
+        video_url2 = await new Acc_config_media.Upload().cloud(video_url2.value);
+      }
+      const params = {
+        goods_title: goods_title.value,
+        // 商品标题
+        goods_price: Number(miniPrice.value),
+        // 价格
+        stock: Number(totalStock.value),
+        // 库存
+        category: sortData.sort_name,
+        // 商品分类
+        goods_banner,
+        goods_cover: goods_banner[0],
+        // 默认取第一张商品横幅图作为封面图
+        goods_details,
+        video_url: video_url2,
+        sku: !!specs_data.value.length,
+        sold: 0,
+        shelves: true,
+        // 默认产品上架
+        seckill: false
+        // 默认商品不参与秒杀
+      };
+      try {
+        const DB = await Acc_config_init.init();
+        const good_res = await DB.database().collection("goods").add({ data: params });
+        if (params.sku) {
+          await DB.database().collection("goods_sku").add({ data: { _id: good_res._id, sku: specs_data.value } });
+        }
+        if (params.category) {
+          const _ = DB.database().command;
+          await DB.database().collection("good_sort").doc(sortData.sort_id).update({ data: { quantity: _.inc(1) } });
+        }
+        new Acc_config_media.Feedback("上传成功", "success").toast();
+      } catch (e) {
+        console.log(e, "====>error");
+        new Acc_config_media.Feedback("提交失败").toast();
+      }
     };
     return (_ctx, _cache) => {
       return common_vendor.e({
@@ -131,9 +208,10 @@ const _sfc_main = {
       }, {
         w: common_vendor.f(detail_imgs.value, (url, index, i0) => {
           return {
-            a: common_vendor.o(($event) => previewDetail(url), index),
-            b: common_vendor.o(($event) => deleteDetail(index), index),
-            c: index
+            a: url,
+            b: common_vendor.o(($event) => previewDetail(url), index),
+            c: common_vendor.o(($event) => deleteDetail(index), index),
+            d: index
           };
         }),
         x: common_vendor.o(uploadDetail),

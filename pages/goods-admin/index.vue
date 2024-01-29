@@ -87,7 +87,7 @@
 			<text>商品详情</text>
 		</view>
 		<view v-for="(url, index) in detail_imgs" :key="index" class="detail-image">
-			<image src="/static/detail/026.jpg" mode="widthFix" @click="previewDetail(url)"></image>
+			<image :src="url" mode="widthFix" @click="previewDetail(url)"></image>
 			<image src="/static/detail/shanchu.svg" mode="widthFix" @click="deleteDetail(index)"></image>
 		</view>
 		<view class="specs-image" @click="uploadDetail">
@@ -207,9 +207,6 @@
 		goods_details: '请上传商品详情'
 	}
 	const submit = async () => {
-		const res = await new Upload().multipleCloud(banner_imgs.value);
-		console.log(res, "====>res");
-		return;
 		// 需要校验的字段
 		const require_field = {
 			goods_title: goods_title.value, // 商品标题
@@ -223,15 +220,59 @@
 		for(const key of require_keys) {
 			if(Array.isArray(require_field[key]) && !require_field[key].length) {
 				new Feedback(valid_message[key]).toast();
-				break;
+				return;
 			}
 			if(!require_field[key]) {
 				new Feedback(valid_message[key]).toast();
-				break;
+				return;
 			}
 		}
-		console.log("tongguo")
-		
+		console.log("通过校验")
+		database();
+	}
+	// 提交到数据库
+	const database = async () => {
+		wx.showLoading({ title: "上传中", mask: true });
+		const goods_banner = await new Upload().multipleCloud(banner_imgs.value); // 横幅banner上传到云存储返回的路径
+		const goods_details = await new Upload().multipleCloud(detail_imgs.value); // 商品详情图上传到云存储返回的路径
+		const video_url = '';
+		if(video_url.value) {
+			video_url = await new Upload().cloud(video_url.value);
+		}
+		const params = {
+			goods_title: goods_title.value, // 商品标题
+			goods_price: Number(miniPrice.value), // 价格
+			stock: Number(totalStock.value), // 库存
+			category: sortData.sort_name, // 商品分类
+			goods_banner,
+			goods_cover: goods_banner[0], // 默认取第一张商品横幅图作为封面图
+			goods_details,
+			video_url,
+			sku: !!specs_data.value.length,
+			sold: 0,
+			shelves: true, // 默认产品上架
+			seckill: false // 默认商品不参与秒杀
+		}
+		try{
+			const DB = await init();
+			// 上传到商品集合
+			const good_res = await DB.database().collection('goods').add({ data: params });
+			// 如果有规格属性，上传到商品规格集合
+			if(params.sku) {
+				await DB.database().collection('goods_sku').add({ data: { _id: good_res._id, sku: specs_data.value } });
+			}
+			// 如果有分类 要给对应的分类数量增加1
+			if(params.category) {
+				const _ = DB.database().command;
+				await DB.database().collection('good_sort').doc(sortData.sort_id).update({ data: { quantity: _.inc(1) } });
+			}
+			// 上传
+			new Feedback("上传成功", "success").toast();
+		}catch(e){
+			//TODO handle the exception
+			console.log(e, "====>error");
+			new Feedback("提交失败").toast();
+		}
 	}
 </script>
 
