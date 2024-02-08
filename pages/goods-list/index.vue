@@ -1,20 +1,63 @@
 <template>
 	<template>
-		<view class="select-goods">
+		<view v-for="(item, index) in goodsList" :key="index" class="select-goods">
 			<view>
-				<image src="/static/goods/01.jpeg" mode="aspectFill"></image>
+				<image :src="item.goods_cover" mode="aspectFill"></image>
 			</view>
 			<view>
-				<text class="over-text line-clamp">这是标题这是标题这是标题这是标题这是标题这是标题这是标题这是标题这是标题</text>
-				<text>¥100</text>
+				<text class="over-text line-clamp">{{ item.goods_title }}</text>
+				<text>¥ {{ item.goods_price }}</text>
 			</view>
 		</view>
 		<!-- 没有数据的提示 -->
-		<view class="Tips">你还没有商品数据</view>
+		<view v-if="!goodsList.length" class="Tips">你还没有商品数据</view>
+		<!-- 加载loading -->
+		<view class="loading-hei">
+			<Loading v-if="loading" />
+		</view>
 	</template>
 </template>
 
 <script setup>
+	import { ref, onMounted } from "vue";
+	import { onReachBottom } from "@dcloudio/uni-app"
+	import { init } from "@/Acc.config/init.js";
+	
+	import Loading from "@/pages/public-view/loading.vue"
+	
+	// 获取商品数据
+	let fieldOb = {
+		goods_cover: true,
+		goods_price: true,
+		goods_title: true,
+		seckill: true,
+		video_url: true
+	}
+	const goodsList = ref([]);
+	const getGoods = async () => {
+		const DB = await init();
+		const { data } = await DB.database().collection("goods").where({ shelves: true }).field(fieldOb).limit(10).get();
+		console.log(data, "====>Data")
+		goodsList.value = data;
+	}
+	onMounted(() => {
+		getGoods();
+	})
+	
+	// 页面上拉触底事件
+	const current_page = ref(0); // 记录当前页
+	const loading = ref(false); // loading 状态
+	onReachBottom(async () => {
+		const DB = await init();
+		const { total } = await DB.database().collection("goods").where({ shelves: true }).count(); // 获取分类数据的总条数
+		if(goodsList.value.length === total) return; // 表示加载完毕了 就不执行后面了
+		current_page.value++;
+		loading.value = true;
+		const skip = current_page.value * 10;
+		const res = await DB.database().collection("goods").where({ shelves: true }).limit(10).skip(skip).get();
+		goodsList.value = [...goodsList.value, ...res.data];
+		loading.value = false;
+	})
 </script>
 
 

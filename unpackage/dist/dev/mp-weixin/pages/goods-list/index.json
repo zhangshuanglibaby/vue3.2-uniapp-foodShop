@@ -1,5 +1,7 @@
 {
   "navigationBarTitleText": "选择商品",
   "navigationBarBackgroundColor": "#fefefe",
-  "usingComponents": {}
+  "usingComponents": {
+    "loading": "../public-view/loading"
+  }
 }
