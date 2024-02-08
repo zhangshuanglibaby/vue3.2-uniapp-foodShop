@@ -1,9 +1,10 @@
 {
   "pages": [
+    "pages/banner-admin/index",
+    "pages/commodity/index",
     "pages/goods-admin/index",
     "pages/specs/index",
     "pages/sort-admin/index",
-    "pages/commodity/index",
     "pages/index/index",
     "pages/order/index"
   ],
@@ -34,7 +35,7 @@
       },
       {
         "pagePath": "pages/order/index",
-        "text": "商品",
+        "text": "订单",
         "iconPath": "/static/tab/dingdan-weixuan.png",
         "selectedIconPath": "./static/tab/dingdan-yixuan.png"
       }

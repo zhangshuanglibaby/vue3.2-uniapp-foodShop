@@ -1,5 +1,19 @@
 {
 	"pages": [ //pages数组中第一项表示应用启动页，参考：https://uniapp.dcloud.io/collocation/pages
+	{
+		"path": "pages/banner-admin/index",
+		"style": {
+			"navigationBarTitleText": "横幅管理",
+			"navigationBarBackgroundColor": "#fefefe"
+		}
+	},
+		{
+			"path": "pages/commodity/index",
+			"style": {
+				"navigationBarTitleText": "商品管理",
+				"navigationBarBackgroundColor": "#fefefe"
+			}
+		},
 		{
 			"path": "pages/goods-admin/index",
 			"style": {
@@ -18,13 +32,6 @@
 			"path": "pages/sort-admin/index",
 			"style": {
 				"navigationBarTitleText": "分类管理",
-				"navigationBarBackgroundColor": "#fefefe"
-			}
-		},
-		{
-			"path": "pages/commodity/index",
-			"style": {
-				"navigationBarTitleText": "商品管理",
 				"navigationBarBackgroundColor": "#fefefe"
 			}
 		},
@@ -65,7 +72,7 @@
 			"selectedIconPath": "./static/tab/shangpin-yixuan.png"
 		},{
 			"pagePath": "pages/order/index",
-			"text": "商品",
+			"text": "订单",
 			"iconPath": "/static/tab/dingdan-weixuan.png",
 			"selectedIconPath": "./static/tab/dingdan-yixuan.png"
 		}]
