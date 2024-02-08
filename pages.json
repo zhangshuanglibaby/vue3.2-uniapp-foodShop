@@ -7,6 +7,13 @@
 			"navigationBarBackgroundColor": "#fefefe"
 		}
 	},
+	{
+		"path": "pages/goods-list/index",
+		"style": {
+			"navigationBarTitleText": "选择商品",
+			"navigationBarBackgroundColor": "#fefefe"
+		}
+	},
 		{
 			"path": "pages/commodity/index",
 			"style": {

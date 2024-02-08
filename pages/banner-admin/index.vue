@@ -1,15 +1,17 @@
 <template>
-	<view class="sort-Header sort-position">
-		<text>横幅图片</text>
-		<text>操作</text>
-	</view>
-	<view style="height: 90rpx;"></view>
-	<view class="sort-Header sort-table">
-		<image src="/static/goods/01.jpeg" mode="aspectFill"></image>
-		<text class="sort-but">删除</text>
-	</view>
+	<template v-if="bannerData.length">
+		<view class="sort-Header sort-position">
+			<text>横幅图片</text>
+			<text>操作</text>
+		</view>
+		<view style="height: 90rpx;"></view>
+		<view v-for="(item, index) in bannerData" :key="index" class="sort-Header sort-table">
+			<image :src="item.banner_cover" mode="aspectFill"></image>
+			<text class="sort-but">删除</text>
+		</view>
+	</template>
 	<!-- 没有数据的提示 -->
-	<view class="Tips">你还没有横幅数据</view>
+	<view v-else class="Tips">你还没有横幅数据</view>
 	<!-- 底部 -->
 	<view style="300rpx"></view>
 	<view class="newly-added-view">
@@ -24,9 +26,11 @@
 				<text>提交</text>
 			</view>
 			<view class="upload-cover">
-				<image src="/static/detail/miaosha-img.jpg" mode="aspectFill"></image>
-				<!-- <image src="/static/goods/02.jpeg" mode="aspectFill"></image> -->
-				<image src="/static/detail/shanchu-goods.svg" mode="widthFix"></image>
+				<image v-if="!banner_cover" src="/static/detail/miaosha-img.jpg" mode="aspectFill" @click="uploadImage"></image>
+				<template v-else>
+					<image :src="banner_cover" mode="aspectFill"></image>
+					<image src="/static/detail/shanchu-goods.svg" mode="widthFix" @click="banner_cover = ''"></image>
+				</template>
 			</view>
 			<view class="relation relation-back">
 				<text>关联商品</text>
@@ -37,8 +41,33 @@
 </template>
 
 <script setup>
-	import { ref } from "vue";
+	import { ref, onMounted } from "vue";
+  import { Upload } from "@/Acc.config/media.js";
+	import { init } from "@/Acc.config/init.js";
+	
 	const show = ref(false);
+	
+	// 获取横幅数据
+	const bannerData = ref([]);
+	const getBannerData = async () => {
+		const DB = await init();
+		const { data } = await DB.database().collection("banner").get();
+		bannerData.value = data;
+		console.log(bannerData.value, "====>bannerData.value");
+	}
+	onMounted(() => {
+		getBannerData();
+	})
+	
+	// 图片上传
+	const banner_cover = ref('');
+	const uploadImage = async () => {
+		const res = await new Upload().image();
+		wx.showLoading({ title: '正在上传' });
+		const url = await new Upload().cloud(res[0].tempFilePath);
+		banner_cover.value = url;
+		wx.hideLoading();
+	}
 </script>
 
 <style>
