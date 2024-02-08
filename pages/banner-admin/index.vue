@@ -7,7 +7,7 @@
 		<view style="height: 90rpx;"></view>
 		<view v-for="(item, index) in bannerData" :key="index" class="sort-Header sort-table">
 			<image :src="item.banner_cover" mode="aspectFill"></image>
-			<text class="sort-but">删除</text>
+			<text class="sort-but" @click="deleteBanner(item._id, index)">删除</text>
 		</view>
 	</template>
 	<!-- 没有数据的提示 -->
@@ -115,6 +115,14 @@
 			//TODO handle the exception
 			console.log(e);
 		}
+	}
+	
+	// ======【 删除banner 】=======
+	const deleteBanner = async (id, index) => {
+		const DB = await init();
+		await DB.database().collection("banner").doc(id).remove();
+		bannerData.value.splice(index, 1);
+		new Feedback("删除成功", "success").toast();
 	}
 </script>
 

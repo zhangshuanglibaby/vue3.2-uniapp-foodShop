@@ -61,6 +61,12 @@ const _sfc_main = {
         console.log(e);
       }
     };
+    const deleteBanner = async (id, index) => {
+      const DB = await Acc_config_init.init();
+      await DB.database().collection("banner").doc(id).remove();
+      bannerData.value.splice(index, 1);
+      new Acc_config_media.Feedback("删除成功", "success").toast();
+    };
     return (_ctx, _cache) => {
       return common_vendor.e({
         a: bannerData.value.length
@@ -68,7 +74,8 @@ const _sfc_main = {
         b: common_vendor.f(bannerData.value, (item, index, i0) => {
           return {
             a: item.banner_cover,
-            b: index
+            b: common_vendor.o(($event) => deleteBanner(item._id, index), index),
+            c: index
           };
         })
       } : {}, {
