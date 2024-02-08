@@ -23,7 +23,7 @@
 			<view class="modify-sub modify-padding">
 				<image src="/static/detail/guanbi.svg" mode="widthFix" @click="show = false"></image>
 				<text>新增横幅</text>
-				<text>提交</text>
+				<text @click="submit">提交</text>
 			</view>
 			<view class="upload-cover">
 				<image v-if="!banner_cover" src="/static/detail/miaosha-img.jpg" mode="aspectFill" @click="uploadImage"></image>
@@ -32,22 +32,23 @@
 					<image src="/static/detail/shanchu-goods.svg" mode="widthFix" @click="banner_cover = ''"></image>
 				</template>
 			</view>
-			<view class="relation relation-back">
+			<view class="relation relation-back" @click="jumpPage">
 				<text>关联商品</text>
-				<text class="over-text">添加</text>
+				<text class="over-text">{{ relative_good.goods_title ? relative_good.goods_title : '添加' }}</text>
 			</view>
 		</view>
 	</page-container>
 </template>
 
 <script setup>
-	import { ref, onMounted } from "vue";
-  import { Upload } from "@/Acc.config/media.js";
+	import { ref, onMounted, reactive } from "vue";
+  import { Upload, Feedback } from "@/Acc.config/media.js";
 	import { init } from "@/Acc.config/init.js";
+	import { relative_good } from "@/Acc.config/answer.js"
 	
 	const show = ref(false);
 	
-	// 获取横幅数据
+	// ======【 获取横幅数据 】======
 	const bannerData = ref([]);
 	const getBannerData = async () => {
 		const DB = await init();
@@ -59,7 +60,7 @@
 		getBannerData();
 	})
 	
-	// 图片上传
+	// ======【 图片上传 】======
 	const banner_cover = ref('');
 	const uploadImage = async () => {
 		const res = await new Upload().image();
@@ -67,6 +68,53 @@
 		const url = await new Upload().cloud(res[0].tempFilePath);
 		banner_cover.value = url;
 		wx.hideLoading();
+	}
+	
+	// ======【 跳转关联商品 】======
+	const jumpPage = () => {
+		wx.navigateTo({ url: "/pages/goods-list/index" })
+	}
+	// 监听关联商品数据
+	// watch(relative_good, (newVal) => {
+	// 	console.log(newVal, "====>newVal");
+	// })
+	
+	// ======【 提交数据 】=====
+	const submit = () => {
+		if(!banner_cover.value) {
+			new Feedback("请上传banner").toast();
+			return;
+		}
+		if(!relative_good.value._id) {
+			new Feedback("请关联商品").toast();
+			return;
+		}
+		// 提交数据
+		database();
+	}
+	// 初始化数据
+	const initData = () => {
+		banner_cover.value = "";
+		relative_good.value = {};
+	}
+	const database = async () => {
+		try{
+			let params = {
+				banner_cover: banner_cover.value,
+				goods_id: relative_good.value._id,
+				video_url: relative_good.video_url
+			}
+			wx.showLoading({ title: "提交中" });
+			const DB = await init();
+			const { data } = await DB.database().collection("banner").add({ data: params });
+			wx.hideLoading();
+			show.value = false;
+			initData();
+			getBannerData();
+		}catch(e){
+			//TODO handle the exception
+			console.log(e);
+		}
 	}
 </script>
 

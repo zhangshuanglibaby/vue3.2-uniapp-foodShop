@@ -1,6 +1,6 @@
 <template>
 	<template>
-		<view v-for="(item, index) in goodsList" :key="index" class="select-goods">
+		<view v-for="(item, index) in goodsList" :key="index" class="select-goods" @click="selectGood(item)">
 			<view>
 				<image :src="item.goods_cover" mode="aspectFill"></image>
 			</view>
@@ -20,12 +20,13 @@
 
 <script setup>
 	import { ref, onMounted } from "vue";
-	import { onReachBottom } from "@dcloudio/uni-app"
+	import { onReachBottom } from "@dcloudio/uni-app";
 	import { init } from "@/Acc.config/init.js";
+	import { relative_good } from "@/Acc.config/answer.js"
 	
-	import Loading from "@/pages/public-view/loading.vue"
+	import Loading from "@/pages/public-view/loading.vue";
 	
-	// 获取商品数据
+	// ======【 获取商品数据 】======
 	let fieldOb = {
 		goods_cover: true,
 		goods_price: true,
@@ -44,7 +45,7 @@
 		getGoods();
 	})
 	
-	// 页面上拉触底事件
+	// ======【 页面上拉触底事件 】======
 	const current_page = ref(0); // 记录当前页
 	const loading = ref(false); // loading 状态
 	onReachBottom(async () => {
@@ -58,6 +59,13 @@
 		goodsList.value = [...goodsList.value, ...res.data];
 		loading.value = false;
 	})
+	
+	// ======【 选择商品 】======
+	const selectGood = (item) => {
+		// 存储关联商品的数据
+		relative_good.value = item;
+		wx.navigateBack({ delta: 1 });
+	}
 </script>
 
 

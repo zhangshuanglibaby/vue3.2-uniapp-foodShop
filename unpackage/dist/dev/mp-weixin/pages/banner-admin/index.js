@@ -2,6 +2,7 @@
 const common_vendor = require("../../common/vendor.js");
 const Acc_config_media = require("../../Acc.config/media.js");
 const Acc_config_init = require("../../Acc.config/init.js");
+const Acc_config_answer = require("../../Acc.config/answer.js");
 const _sfc_main = {
   __name: "index",
   setup(__props) {
@@ -24,6 +25,42 @@ const _sfc_main = {
       banner_cover.value = url;
       common_vendor.wx$1.hideLoading();
     };
+    const jumpPage = () => {
+      common_vendor.wx$1.navigateTo({ url: "/pages/goods-list/index" });
+    };
+    const submit = () => {
+      if (!banner_cover.value) {
+        new Acc_config_media.Feedback("请上传banner").toast();
+        return;
+      }
+      if (!Acc_config_answer.relative_good.value._id) {
+        new Acc_config_media.Feedback("请关联商品").toast();
+        return;
+      }
+      database();
+    };
+    const initData = () => {
+      banner_cover.value = "";
+      Acc_config_answer.relative_good.value = {};
+    };
+    const database = async () => {
+      try {
+        let params = {
+          banner_cover: banner_cover.value,
+          goods_id: Acc_config_answer.relative_good.value._id,
+          video_url: Acc_config_answer.relative_good.video_url
+        };
+        common_vendor.wx$1.showLoading({ title: "提交中" });
+        const DB = await Acc_config_init.init();
+        const { data } = await DB.database().collection("banner").add({ data: params });
+        common_vendor.wx$1.hideLoading();
+        show.value = false;
+        initData();
+        getBannerData();
+      } catch (e) {
+        console.log(e);
+      }
+    };
     return (_ctx, _cache) => {
       return common_vendor.e({
         a: bannerData.value.length
@@ -37,14 +74,17 @@ const _sfc_main = {
       } : {}, {
         c: common_vendor.o(($event) => show.value = true),
         d: common_vendor.o(($event) => show.value = false),
-        e: !banner_cover.value
+        e: common_vendor.o(submit),
+        f: !banner_cover.value
       }, !banner_cover.value ? {
-        f: common_vendor.o(uploadImage)
+        g: common_vendor.o(uploadImage)
       } : {
-        g: banner_cover.value,
-        h: common_vendor.o(($event) => banner_cover.value = "")
+        h: banner_cover.value,
+        i: common_vendor.o(($event) => banner_cover.value = "")
       }, {
-        i: show.value
+        j: common_vendor.t(common_vendor.unref(Acc_config_answer.relative_good).goods_title ? common_vendor.unref(Acc_config_answer.relative_good).goods_title : "添加"),
+        k: common_vendor.o(jumpPage),
+        l: show.value
       });
     };
   }

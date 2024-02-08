@@ -1,6 +1,7 @@
 "use strict";
 const common_vendor = require("../../common/vendor.js");
 const Acc_config_init = require("../../Acc.config/init.js");
+const Acc_config_answer = require("../../Acc.config/answer.js");
 if (!Math) {
   Loading();
 }
@@ -39,6 +40,10 @@ const _sfc_main = {
       goodsList.value = [...goodsList.value, ...res.data];
       loading.value = false;
     });
+    const selectGood = (item) => {
+      Acc_config_answer.relative_good.value = item;
+      common_vendor.wx$1.navigateBack({ delta: 1 });
+    };
     return (_ctx, _cache) => {
       return common_vendor.e({
         a: common_vendor.f(goodsList.value, (item, index, i0) => {
@@ -46,7 +51,8 @@ const _sfc_main = {
             a: item.goods_cover,
             b: common_vendor.t(item.goods_title),
             c: common_vendor.t(item.goods_price),
-            d: index
+            d: index,
+            e: common_vendor.o(($event) => selectGood(item), index)
           };
         }),
         b: !goodsList.value.length
